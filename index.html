@@ -74,7 +74,7 @@
 
     var map = L.map('map', {
         scrollWheelZoom: false
-      }).setView( [40.767802,-73.953266], 12);
+      }).setView( [40.767802,-73.953266], 11);
 
 
 
@@ -116,7 +116,7 @@
 
       function style(feature) {
           return {
-              fillColor: getColor(feature.properties.NoiseComplains),
+              fillColor: getColor(feature.properties['Street Condition']),
               weight: 2,
               opacity: 1,
               color: 'white',
@@ -177,7 +177,7 @@
          });
        }
 
-      $.getJSON('data/neighborhoods.geojson', function(state_data) {
+      $.getJSON('data/geo8.geojson', function(state_data) {
          geojson = L.geoJson(state_data,{
             style: style,
             onEachFeature: onEachFeature
