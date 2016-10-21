@@ -10,6 +10,10 @@
     <link rel="icon" href="./favicon.ico">
     <link href="main.css" rel="stylesheet" type="text/css"> 
     <title>CartoDB Bootstrap Starter Template</title>
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.0/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.0/jquery-ui.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/themes/css/cartodb.css" />
       <script src="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/cartodb.js"></script>    
@@ -24,22 +28,7 @@
 
     <div id="container">
     <div id="sidebar">
-     <div class="dropdown">
-        <button id='dd1' class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" >Year
-        <span class="caret"></span></button>
-         <ul class="dropdown-menu">
-             <li><a href="#">2005</a></li>
-             <li><a href="#">2006</a></li>
-             <li><a href="#">2007</a></li>
-             <li><a href="#">2008</a></li>
-             <li><a href="#">2009</a></li>
-             <li><a href="#">2010</a></li>
-             <li><a href="#">2011</a></li>
-             <li><a href="#">2012</a></li>
-             <li><a href="#">2013</a></li>
-             <li><a href="#">2014</a></li>
-            </ul>
-        </div>
+ 
         <div class="dropdown">
         <button id='dd1' class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" >Borough
         <span class="caret"></span></button>
@@ -55,7 +44,45 @@
         <div id="ranksection">
             <input id="rank" placeholder="Car">X <input id="rank" placeholder="Income">X <input id="rank" placeholder="Complaint">
         </div>
-        
+        <div id="statistics"> 
+            <p id='st1'><u class=stats id='requests'> 000 </u> Complaints at Census Tract <u class=stats id='ct' > Select </u> in <u class=stats id='nhood'> Select </u></p>
+        </div>
+        <div id="slider">
+         <p>
+             <label for="amount">Year range:</label>
+             <input type="text" id="amount" readonly style="border:0; color:black; font-weight:bold; margin-top:10">
+        </p>
+        <div id="slider-range"></div><br>
+        </div>
+        <div id="slider">
+         <p>
+             <label for="amount1">Score range:</label>
+             <input type="text" id="amount1" readonly style="border:0; color:black; font-weight:bold; margin-top:10">
+        </p>
+        <div id="slider-score"></div><br>
+        </div>
+         <script>
+             
+            var year = function(min,max,def,v,a) {
+                $( "#slider-"+v ).slider({
+                 
+                  range: true,
+                  min: min,
+                  max: max,
+                  values: [ def, max ],
+                  slide: function( event, ui ) {
+                    $( "#"+a ).val( ui.values[ 0 ] + " - " + ui.values[ 1 ] );
+                  }
+                });
+                $( "#"+a ).val( "" + $( "#slider-"+v ).slider( "values", 0 ) +
+                  " - " + $( "#slider-"+v ).slider( "values", 1 ) );
+              };
+             year(2005,2015,2014,'range','amount');
+             year(0,100,90,'score','amount1');
+        </script>
+        <div id='rankall'>
+        <h2> Rank</h2>
+        </div>
         
           
         
@@ -65,7 +92,6 @@
 
     </div><!-- /.container -->
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
     <script src="http://libs.cartocdn.com/cartodb.js/v3/3.15/cartodb.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
     <script>
@@ -83,22 +109,13 @@
 
       //this function takes a value and returns a color based on which bucket the value falls between
       function getColor(d) {
-          return d > 4000  ? '#FC4E2A' :
-                 d > 3000   ? '#FD8D3C' :
-                 d > 2000   ? '#FEB24C' :
-                 d > 1000   ? '#FED976' :
+          return d > 200  ? '#FC4E2A' :
+                 d > 100   ? '#FD8D3C' :
+                 d > 20   ? '#FEB24C' :
+                 d > 10   ? '#FED976' :
                             '#FFEDA0';
       }
-      function style(feature) {
-          return {
-              fillColor: getColor(feature.properties.density),
-              weight: 2,
-              opacity: 1,
-              color: 'white',
-              dashArray: '3',
-              fillOpacity: 0.7
-          };
-        }
+   
 
     L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',{
       attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
@@ -106,7 +123,9 @@
 
     var layerUrl = 'https://rgdonohue.cartodb.com/api/v2/viz/bcdbfe36-6f4f-11e5-833d-0e674067d321/viz.json';
 
-    cartodb.createLayer(map, layerUrl)
+    cartodb.createLayer(map, layerUrl,{
+        legends:false
+    })
       .addTo(map)
       .on('done', function(layer) {
 
@@ -136,6 +155,10 @@
               dashArray: '',
               fillOpacity: 0.7
           });
+            
+            document.getElementById("requests").innerHTML=layer.feature.properties['Street Condition']
+            document.getElementById("ct").innerHTML=layer.feature.properties['WGS84.code']
+            document.getElementById("nhood").innerHTML=layer.feature.properties['Neighborhood']
 
           if (!L.Browser.ie && !L.Browser.opera) {
               layer.bringToFront();
@@ -153,7 +176,7 @@
         
         var info = L.control();
 
-        info.setPosition("topleft");
+        info.setPosition("topright");
         info.onAdd = function (map) {
             this._div = L.DomUtil.create('div', 'info'); // create a div with a class "info"
             this.update();
@@ -164,11 +187,25 @@
         info.update = function (props) {
             this._div.innerHTML = '<h4>New York ' + ' Map'+'</h4>';
         };
-        
-        
-
         info.addTo(map);
+        var legend = L.control({position: 'bottomright'});
 
+        legend.onAdd = function (map) {
+
+        var div = L.DomUtil.create('div', 'info legend'),
+        grades = [0,10,20,100,200],
+        labels = [];
+
+    // loop through our density intervals and generate a label with a colored square for each interval
+        for (var i = 0; i < grades.length; i++) {
+        div.innerHTML +='<i style="background:' + getColor(grades[i] + 1) + '"></i> ' +
+            grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
+        }
+
+        return div;
+    };
+
+    legend.addTo(map);
 
       function onEachFeature(feature, layer) {
          layer.on({
