@@ -1,10 +1,9 @@
-#311 Street Conditon Project. 
+# cartodb-bootstrap-template
+A starter template for creating a fullscreen cartodb.js map with bootstrap navbar
 
-##Finding Location is a first Jupyter notebook cleaning deching all the data for which we don't have coordinates
+- Uses the cartodb base layer and data from this [cartodb.js tutorial](http://docs.cartodb.com/tutorials/create_map_cartodbjs.html)
+- Based on this [bootstrap starter template](http://getbootstrap.com/examples/starter-template/)
 
-##GettingCoordinates Notebook uses google API to find the coordinates of non geo located service requests
+![screenshot](https://www.evernote.com/shard/s288/sh/cf9f5723-a8b5-4eba-8a8b-98227ebbc9b6/1d6f64d6a6cceb573fa0ad7eb5fb4f36/res/9893047c-9628-4783-9be0-24197d35a58b/skitch.png?resizeSmall&width=832)
 
-## Third Notebook combines all data and creates a single file with all  geo located complaints accessible from link below.
-
-https://drive.google.com/a/nyu.edu/file/d/0B3YXRPeRJxQFanFtTlA4QlhVaEU/view?usp=sharing
-
+This project has borrowed some CSS and layout elements from the awesome [Bootleaf](https://github.com/bmcbride/bootleaf) by Bryan McBride
