@@ -18,8 +18,8 @@
     <link rel="stylesheet" href="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/themes/css/cartodb.css" />
       <script src="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/cartodb.js"></script>    
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
-
-    <link rel="icon" type="image/png" href="./favicon.png">
+    <script type="text/javascript" src="http://mbostock.github.com/d3/d3.js"></script>
+    <script type="text/javascript" src="js/topten.js"> </script>
   </head>
 
   <body>
@@ -28,7 +28,9 @@
 
     <div id="container">
     <div id="sidebar">
- 
+        <div id="score">
+            <p>Score</p>
+        </div>
         <div class="dropdown">
         <button id='dd1' class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" >Borough
         <span class="caret"></span></button>
@@ -63,13 +65,13 @@
         </div>
          <script>
              
-            var year = function(min,max,def,v,a) {
+            var year = function(min,max,defm,defmax,v,a) {
                 $( "#slider-"+v ).slider({
-                 
+                 disabled:true,
                   range: true,
                   min: min,
                   max: max,
-                  values: [ def, max ],
+                  values: [ defm, defmax ],
                   slide: function( event, ui ) {
                     $( "#"+a ).val( ui.values[ 0 ] + " - " + ui.values[ 1 ] );
                   }
@@ -77,14 +79,15 @@
                 $( "#"+a ).val( "" + $( "#slider-"+v ).slider( "values", 0 ) +
                   " - " + $( "#slider-"+v ).slider( "values", 1 ) );
               };
-             year(2005,2015,2014,'range','amount');
-             year(0,100,90,'score','amount1');
+             year(2005,2015,2005,2015,'range','amount');
+             year(0,2038,0,2038,'score','amount1');
         </script>
         <div id='rankall'>
-        <h2> Rank</h2>
+            <p id="rankicon1"> Top Ranked </p>
+             <span id="rankicon" class="glyphicon">&#xe155;</span>
         </div>
         
-          
+            
         
       </div>
       <div id="map">
@@ -109,10 +112,10 @@
 
       //this function takes a value and returns a color based on which bucket the value falls between
       function getColor(d) {
-          return d > 200  ? '#FC4E2A' :
-                 d > 100   ? '#FD8D3C' :
-                 d > 20   ? '#FEB24C' :
-                 d > 10   ? '#FED976' :
+          return d > 1000  ? '#FC4E2A' :
+                 d > 800   ? '#FD8D3C' :
+                 d > 500   ? '#FEB24C' :
+                 d > 100   ? '#FED976' :
                             '#FFEDA0';
       }
    
@@ -136,7 +139,7 @@
 
       function style(feature) {
           return {
-              fillColor: getColor(feature.properties['Street Condition']),
+              fillColor: getColor(feature.properties['Total']),
               weight: 2,
               opacity: 1,
               color: 'white',
@@ -156,9 +159,11 @@
               fillOpacity: 0.7
           });
             
-            document.getElementById("requests").innerHTML=layer.feature.properties['Street Condition']
-            document.getElementById("ct").innerHTML=layer.feature.properties['WGS84.code']
-            document.getElementById("nhood").innerHTML=layer.feature.properties['Neighborhood']
+            document.getElementById("requests").innerHTML=layer.feature.properties['Total']
+            document.getElementById("ct").innerHTML=layer.feature.properties['BoroCT2010']
+            document.getElementById("nhood").innerHTML=layer.feature.properties['NTAName']
+            score= parseInt(layer.feature.properties['rveh'])+parseInt(layer.feature.properties['rincome'])+parseInt(layer.feature.properties['rstreet'])
+            document.getElementById("score").innerHTML=Math.ceil(score/3)
 
           if (!L.Browser.ie && !L.Browser.opera) {
               layer.bringToFront();
@@ -172,6 +177,11 @@
         //this runs on mouseout
         function resetHighlight(e) {
           geojson.resetStyle(e.target);
+            //var layer = e.target;
+            document.getElementById("requests").innerHTML=0
+            document.getElementById("ct").innerHTML="Select"
+            document.getElementById("nhood").innerHTML="Select"
+            document.getElementById("score").innerHTML="Score"
         }
         
         var info = L.control();
@@ -193,7 +203,7 @@
         legend.onAdd = function (map) {
 
         var div = L.DomUtil.create('div', 'info legend'),
-        grades = [0,10,20,100,200],
+        grades = [0,100,50,800,1000],
         labels = [];
 
     // loop through our density intervals and generate a label with a colored square for each interval
@@ -215,7 +225,7 @@
          });
        }
 
-      $.getJSON('data/geo8.geojson', function(state_data) {
+      $.getJSON('data/geoargo1.geojson', function(state_data) {
          geojson = L.geoJson(state_data,{
             style: style,
             onEachFeature: onEachFeature

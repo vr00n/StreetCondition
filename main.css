@@ -62,7 +62,7 @@ html, body, #container{
     height: 10%;
 }
 .dropdown{
-    margin: 0 auto;
+    float: left;
     width: 42%;
 }
 #dd1{
@@ -99,4 +99,19 @@ html, body, #container{
 }
 #rankall{
     float: left;
+}
+#score{
+    width: 40%;
+    font-size: 40px;
+    float: left;
+    color:indianred
+}
+#rankicon{
+    float: left;
+
+}
+#rankicon1{
+    float: left;
+    font-size: 25px;
+
 }
