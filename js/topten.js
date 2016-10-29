@@ -1,5 +1,5 @@
 var w=250;
-var h =250;
+var h =260;
 console.log("width is :"+w);
 console.log("height is :"+h);
 
@@ -82,7 +82,7 @@ var bars = function(data){
                 .attr("stroke-width", 5)
                 .attr("width", w)  
                  .attr("x", function(d, i) {
-                        if(i<20){
+                        if(i<50){
                        return (i * 10);
                         }
                     })
@@ -91,13 +91,13 @@ var bars = function(data){
                     .ease("exp")
                     .attr("height", function(d,i) 
                           {
-                    if(i<20){
+                    if(i<50){
                     //console.log("top ten:"+max);
                     return ((d.score/max)*height);
                     }
                     })
                     .attr("y", function(d, i){
-                        if(i<20){
+                        if(i<50){
                     return (height - (((d.score/max)*height)));
                         }
                     })
