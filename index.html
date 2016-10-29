@@ -14,13 +14,12 @@
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.0/themes/base/jquery-ui.css">
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.0/jquery-ui.js"></script>
-    <script type="text/javascript" src="http://mbostock.github.com/d3/d3.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/themes/css/cartodb.css" />
       <script src="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/cartodb.js"></script>    
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
-    <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
-   
+    <script type="text/javascript" src="http://mbostock.github.com/d3/d3.js"></script>
+    <script type="text/javascript" src="js/topten.js"> </script>
   </head>
 
   <body>
@@ -45,7 +44,7 @@
         </div>
         
         <div id="ranksection">
-            <input class='rank' id="rankcar" placeholder="Car">X <input class='rank' id="rankincome"  placeholder="Income">X <input class='rank' id="rankcomplaint" placeholder="Complaint">
+            <input id="rank" placeholder="Car">X <input id="rank" placeholder="Income">X <input id="rank" placeholder="Complaint">
         </div>
         <div id="statistics"> 
             <p id='st1'><u class=stats id='requests'> 000 </u> Complaints at Census Tract <u class=stats id='ct' > Select </u> in <u class=stats id='nhood'> Select </u></p>
@@ -68,6 +67,7 @@
              
             var year = function(min,max,defm,defmax,v,a) {
                 $( "#slider-"+v ).slider({
+                 disabled:true,
                   range: true,
                   min: min,
                   max: max,
@@ -76,19 +76,15 @@
                     $( "#"+a ).val( ui.values[ 0 ] + " - " + ui.values[ 1 ] );
                   }
                 });
-                var y=$('#amount').val();
                 $( "#"+a ).val( "" + $( "#slider-"+v ).slider( "values", 0 ) +
                   " - " + $( "#slider-"+v ).slider( "values", 1 ) );
               };
-             
              year(2005,2015,2005,2015,'range','amount');
              year(0,2038,0,2038,'score','amount1');
-             
         </script>
         <div id='rankall'>
             <p id="rankicon1"> Top Ranked </p>
-             <span id="rankicon" class="glyphicon">&#xe155;</span><br><br>
-            <div class="barchartcontainer"><svg id="svg4"></svg></div>
+             <span id="rankicon" class="glyphicon">&#xe155;</span>
         </div>
         
             
@@ -102,9 +98,9 @@
     <script src="http://libs.cartocdn.com/cartodb.js/v3/3.15/cartodb.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
     <script>
-    console.log($( "#slider-range" ).slider( "values", 0 ));
-    
-    var queue=[2];
+
+
+
 
     var map = L.map('map', {
         scrollWheelZoom: false
@@ -140,6 +136,7 @@
         //log the error
       });
 
+
       function style(feature) {
           return {
               fillColor: getColor(feature.properties['Total']),
@@ -152,8 +149,6 @@
         }
 
         //this function is set to run when a user mouses over any polygon
-     
-        
         function mouseoverFunction(e) {
           var layer = e.target;
 
@@ -167,41 +162,8 @@
             document.getElementById("requests").innerHTML=layer.feature.properties['Total']
             document.getElementById("ct").innerHTML=layer.feature.properties['BoroCT2010']
             document.getElementById("nhood").innerHTML=layer.feature.properties['NTAName']
-          
-            weights = function(){
-                var car = parseInt(layer.feature.properties['rveh']);
-                var income=parseInt(layer.feature.properties['rincome']);
-                var street = parseInt(layer.feature.properties['rstreet']);
-                var wtcar = $('#rankcar').val();
-                var wtincome = $("#rankincome").val();
-                var wtstreet = $("#rankcomplaint").val();
-                if(wtcar==''){
-                    wtcar=1;
-                }
-                if(wtincome==''){
-                    wtincome=1;
-                }
-                if(wtstreet==''){
-                    wtstreet=1;
-                }
-                var score= (wtcar*car)+(wtincome*income)+(wtstreet*street);
-                document.getElementById("score").innerHTML=Math.ceil(score/3)
-                sumwts=wtcar+wtincome+wtstreet;
-                //console.log(sumwts);
-                queue.push(sumwts);
-                //console.log(queue, queue.length)
-                if(queue.length>2){
-                    queue.shift();
-                }
-                if(queue.length>1 && queue[0]!=queue[1])
-                 {
-                
-                compliants(wtcar,wtincome,wtstreet);
-                }
-                //console.log(rankcar);
-            }
-            weights();
-            
+            score= parseInt(layer.feature.properties['rveh'])+parseInt(layer.feature.properties['rincome'])+parseInt(layer.feature.properties['rstreet'])
+            document.getElementById("score").innerHTML=Math.ceil(score/3)
 
           if (!L.Browser.ie && !L.Browser.opera) {
               layer.bringToFront();
@@ -270,8 +232,5 @@
           }).addTo(map);
 });
     </script>
-       <script type="text/javascript" src="js/topten.js"> </script>
-       <script>initbar();</script>
-      <script>compliants(1,1,1);</script>
   </body>
 </html>
