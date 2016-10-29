@@ -1,6 +1,6 @@
-var w=300;
-var h =280;
- console.log("width is :"+w);
+var w=250;
+var h =250;
+console.log("width is :"+w);
 console.log("height is :"+h);
 
 
