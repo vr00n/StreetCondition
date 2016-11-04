@@ -248,7 +248,7 @@
 
         // method that we will use to update the control based on feature properties passed
         info.update = function (props) {
-            this._div.innerHTML = '<h4>New York ' + ' Map'+'</h4>';
+            this._div.innerHTML = '<h4>Total Requests: 679,538'+'</h4><h4>Total GeoCoded: 71663</h4';
         };
         info.addTo(map);
         var legend = L.control({position: 'bottomright'});
@@ -260,6 +260,7 @@
         labels = [];
 
     // loop through our density intervals and generate a label with a colored square for each interval
+        div.innerHTML='<h4>Service Requests</h4>'
         for (var i = 0; i < grades.length; i++) {
         div.innerHTML +='<i style="background:' + getColor(grades[i] + 1) + '"></i> ' +
             grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
@@ -294,10 +295,11 @@
         readdata();
   
     $('.dropdown-menu li a').on('click', function(){
+        if(k!=$(this).html()){
         map.removeLayer(geojson);
         console.log(($(this).html()));
         k=($(this).html())
-        readdata();
+        readdata();}
     });
         //readdata();
     </script>
