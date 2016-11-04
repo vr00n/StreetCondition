@@ -25,8 +25,6 @@
 
   <body>
 
-    
-
     <div id="container">
     <div id="sidebar">
         <div id="score">
@@ -36,6 +34,7 @@
         <button id='dd1' class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" >Borough
         <span class="caret"></span></button>
          <ul class="dropdown-menu">
+             <li><a href="#">All</a></li>
              <li><a href="#">Manhattan</a></li>
              <li><a href="#">Brooklyn</a></li>
              <li><a href="#">Bronx</a></li>
@@ -65,7 +64,7 @@
         <div id="slider-score"></div><br>
         </div>
          <script>
-             
+            var k='All';
             var year = function(min,max,defm,defmax,v,a) {
                 $( "#slider-"+v ).slider({
                   range: true,
@@ -113,6 +112,7 @@
 
 
       var geojson;
+  
 
       //this function takes a value and returns a color based on which bucket the value falls between
       function getColor(d) {
@@ -141,22 +141,37 @@
       });
 
       function style(feature) {
-          return {
-              fillColor: getColor(feature.properties['Total']),
-              weight: 2,
-              opacity: 1,
-              color: 'white',
-              dashArray: '3',
-              fillOpacity: 0.7
-          };
+          //console.log(feature);
+          if(feature.properties.BoroName==k || k=='All'){
+              return {
+                  fillColor: getColor(feature.properties['Total']),
+                  weight: 2,
+                  opacity: 1,
+                  color: 'white',
+                  dashArray: '1',
+                  fillOpacity: 0.7
+              };
+          }
+          else{
+               return {
+                  fillColor: getColor(feature.properties['Total']),
+                  weight: 2,
+                  opacity: 1,
+                  color: 'white',
+                  dashArray: '1',
+                  fillOpacity: 0.2
+              };
+          }
+         
         }
+        
 
         //this function is set to run when a user mouses over any polygon
      
         
         function mouseoverFunction(e) {
           var layer = e.target;
-
+            //console.log(layer)
           layer.setStyle({
               weight: 5,
               color: '#666',
@@ -195,7 +210,7 @@
                 }
                 if(queue.length>1 && queue[0]!=queue[1])
                  {
-                
+                d3.selectAll("text").remove();
                 compliants(wtcar,wtincome,wtstreet);
                 }
                 //console.log(rankcar);
@@ -208,8 +223,8 @@
           }
 
           //update the text in the infowindow with whatever was in the data
-          console.log(layer.feature.properties.NTACode+ '\n\n'+ layer.feature.properties.NoiseComplains);
-          $('#infoWindow').text(layer.feature.properties.NTACode+'\n\n'+ layer.feature.properties.NoiseComplains);
+         // console.log(layer.feature.properties.NTACode+ '\n\n'+ layer.feature.properties.NoiseComplains);
+          //$('#infoWindow').text(layer.feature.properties.NTACode+'\n\n'+ layer.feature.properties.NoiseComplains);
         }
 
         //this runs on mouseout
@@ -256,19 +271,35 @@
     legend.addTo(map);
 
       function onEachFeature(feature, layer) {
+           //console.log(layer.feature.properties.BoroName)
+        if(layer.feature.properties.BoroName==k || k=='All' ){
          layer.on({
              mouseover: mouseoverFunction,
              mouseout: resetHighlight
              //click: zoomToFeature
          });
+        };
        }
 
+      var readdata=function(){
       $.getJSON('data/geoargo1.geojson', function(state_data) {
+//        console.log(state_data);
+         
          geojson = L.geoJson(state_data,{
             style: style,
             onEachFeature: onEachFeature
           }).addTo(map);
-});
+      });
+      };
+        readdata();
+  
+    $('.dropdown-menu li a').on('click', function(){
+        map.removeLayer(geojson);
+        console.log(($(this).html()));
+        k=($(this).html())
+        readdata();
+    });
+        //readdata();
     </script>
        <script type="text/javascript" src="js/topten.js"> </script>
        <script>initbar();</script>

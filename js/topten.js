@@ -23,17 +23,28 @@ var yAxis = d3.svg.axis()
     .orient("left")
     .ticks(10, "%");
 
+var colors = ['#1abc9c','#5499c7','#af7ac5','#ec7063','#cd6155','#dc7633','#eb984e','#f5b041','#f4d03f','#58d68d','#52be80','#34495e'];
+function Randomcolor() {
+    var letters = '0123456789ABCDEF';
+    var color = '#';
+    for (var i = 0; i < 6; i++ ) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+}
 
 var compliants = function(wcar,wincome,wstreet){
     var link1='data/proto1.csv'
     d3.csv(""+link1,function(calls){
             data = calls.map(function(d){
+                //console.log(d['geometry'].replace(/\POLYGON |[()]/g,'').split(','))
+                geometry = (d['geometry'].replace(/\POLYGON |[()]|MULTI/g,'').split(','));
                 street = +(d['rstreet']);
                 income =  +(d['rincome']);
                 car=  +(d['rveh']);
                 census = (d['BoroCT2010'])
                 score = Math.ceil(((wstreet*street)+(wincome*income)+(wcar*car))/3);
-                return {"street":wstreet*street,"income":wincome*income,"car":wcar*car,"score":score,"census":census};
+                return {"street":wstreet*street,"income":wincome*income,"car":wcar*car,"score":score,"census":census,"geometry":geometry};
             })
             bars(data);
         })
@@ -50,27 +61,68 @@ var bars = function(data){
                return d3.descending(x.score, y.score);
             });
             
-          
+            var getcoordinate=function(d){
+                coordinates=[]
+                console.log(d.geometry.length);
+                for(j=0;j<d.geometry.length;j++)
+                {
+                    var v=d.geometry[j].trim().split(' ');
+                    //console.log(v)
+                    cor=[]
+                    for(n=0;n<v.length;n++){
+                        cor.push(parseFloat(v[v.length-1-n]));
+                    }
+                    coordinates.push(cor)
+                }
+                
+                return coordinates
+            }
+            var polygon
+            var c
+            var colortip=function(cords){
+                
+                c=0
+                polygon=0
+                c = getcoordinate(cords)
+                //console.log(c)
+                polygon = L.polygon(c,{color:'black',fillColor:Randomcolor(),fillOpacity: 0.99}).addTo(map);
+                //console.log(polygon)
+            }
             
              //console.log(sorted)
              var tip = d3.tip()
                       .attr('class', 'd3-tip')
                       .offset([-8, 0])
-                      .html(function(d) {
-                        return "<strong>Score based ranks:</strong> <span style='color:red'>" +d['census']+":</span><strong>"+d['score']+'</strong>';
-                      })
+                      
+                      
+                      
+                      //.html(function(d) {
+                    //    return "<strong>Score based ranks:</strong> <span style='color:red'>" +d['census']+":</span><strong>"+d['score']+'</strong>';
+                     // })
+              
              
              var vis = d3.select("#barcharta");
-             var bars = vis.selectAll("rect.bar")
+             var bars = vis.selectAll("text.bar")
                         .data(sorted)
  
             vis.call(tip);
             
+            
             bars.enter()
-                .append("svg:rect")
+                .append("svg:text")
                 .attr("class", "bar")
-                 .on('mouseover', tip.show)
-                .on('mouseout', tip.hide)
+                .on('mouseover', function(d){
+              // console.log(d)
+            
+                colortip(d);   
+            })
+                .on('mouseout', function(){
+                //d3.selectAll("text").remove();
+                
+                map.removeLayer(polygon);
+    
+                polygon=0
+            })
 
             bars.exit()
                 .remove()
@@ -81,29 +133,22 @@ var bars = function(data){
             bars
                 .attr("stroke-width", 5)
                 .attr("width", w)  
-                 .attr("x", function(d, i) {
-                        if(i<50){
-                       return (i * 10);
-                        }
-                    })
+                 .attr("x", 20)
                 .transition()
-                    .delay(200)
-                    .ease("exp")
-                    .attr("height", function(d,i) 
-                          {
-                    if(i<50){
-                    //console.log("top ten:"+max);
-                    return ((d.score/max)*height);
-                    }
-                    })
-                    .attr("y", function(d, i){
-                        if(i<50){
-                    return (height - (((d.score/max)*height)));
-                        }
-                    })
-            
-             
-        }
+                    .delay(300)
+                    .ease("linear")
+                    .attr("height",10)
+                    .attr("y", function(d,i){
+                            if(i<6){
+                                return (20+(30*i));
+                            }})
+                    .text(function(d,i){
+                            if(i<5){
+                            console.log(d.census)
+                            return i+1+'. '+parseInt(d.census)
+                            }})
+                    .attr("font-size", "35px")
+                }
         
     function initbar()
     {

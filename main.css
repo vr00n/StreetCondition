@@ -123,7 +123,7 @@ html, body, #container{
 
 }
 .bar {
-  fill: orange;
+  fill: indianred;
 }
 .bartext {
   fill: black;
@@ -131,7 +131,7 @@ html, body, #container{
 
 
 .bar:hover {
-  fill: orangered ;
+  fill: orange ;
 }
 .d3-tip {
   line-height: 1;
