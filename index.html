@@ -73,6 +73,7 @@
                   values: [ defm, defmax ],
                   slide: function( event, ui ) {
                     $( "#"+a ).val( ui.values[ 0 ] + " - " + ui.values[ 1 ] );
+                    
                   }
                 });
                 var y=$('#amount').val();
@@ -80,7 +81,7 @@
                   " - " + $( "#slider-"+v ).slider( "values", 1 ) );
               };
              
-             year(2005,2015,2005,2015,'range','amount');
+             year(2005,2016,2005,2016,'range','amount');
              year(0,2038,0,2038,'score','amount1');
              
         </script>
@@ -101,10 +102,11 @@
     <script src="http://libs.cartocdn.com/cartodb.js/v3/3.15/cartodb.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
     <script>
-    console.log($( "#slider-range" ).slider( "values", 0 ));
-    
-    var queue=[2];
-
+    console.log($( "#slider-range" ).slider( "values", 0 ),$( "#slider-range" ).slider( "values", 1 ));
+   
+    var queue =[2];
+    var minqueue =[2];
+    var maxqueue =[2];
     var map = L.map('map', {
         scrollWheelZoom: false
       }).setView( [40.767802,-73.953266], 11);
@@ -143,13 +145,14 @@
       function style(feature) {
           //console.log(feature);
           if(feature.properties.BoroName==k || k=='All'){
+              
               return {
                   fillColor: getColor(feature.properties['Total']),
                   weight: 2,
                   opacity: 1,
                   color: 'white',
                   dashArray: '1',
-                  fillOpacity: 0.7
+                  fillOpacity: 0.8
               };
           }
           else{
@@ -159,7 +162,7 @@
                   opacity: 1,
                   color: 'white',
                   dashArray: '1',
-                  fillOpacity: 0.2
+                  fillOpacity: 0.1
               };
           }
          
@@ -168,7 +171,10 @@
 
         //this function is set to run when a user mouses over any polygon
      
-        
+        var min = parseInt($('#amount').val().split('-')[0].trim());
+        var max = parseInt($('#amount').val().split('-')[1].trim());
+        var bname='All';
+        var score = 'All';
         function mouseoverFunction(e) {
           var layer = e.target;
             //console.log(layer)
@@ -179,14 +185,36 @@
               fillOpacity: 0.7
           });
             
-            document.getElementById("requests").innerHTML=layer.feature.properties['Total']
-            document.getElementById("ct").innerHTML=layer.feature.properties['BoroCT2010']
-            document.getElementById("nhood").innerHTML=layer.feature.properties['NTAName']
+            var min = parseInt($('#amount').val().split('-')[0].trim());
+            var max = parseInt($('#amount').val().split('-')[1].trim());
+            //console.log(min,max);
+            total=0
+            for(i=min;i<=max;i++){
+                //console.log(i);
+                total+=layer.feature.properties[i+'_1'];
+            }
+            //console.log(layer.feature.properties['Total']);
+            document.getElementById("requests").innerHTML=total;
+            document.getElementById("ct").innerHTML=layer.feature.properties['BoroCT2010'];
+            document.getElementById("nhood").innerHTML=layer.feature.properties['NTAName'];
           
             weights = function(){
                 var car = parseInt(layer.feature.properties['rveh']);
                 var income=parseInt(layer.feature.properties['rincome']);
-                var street = parseInt(layer.feature.properties['rstreet']);
+                var street=0
+                // if min and max year is custom selected then mean of selected year's rank is returned as effective net complaint rank
+                if((max-min)!=11)
+                    {
+                        for(i=min;i<=max;i++){
+                        street+=parseInt(layer.feature.properties['rstreet'+i]);
+                    }
+                    console.log(max-min)
+                    street=street/(max-min);
+                    }
+                else{
+                    street=parseInt(layer.feature.properties['rstreet']);
+                }
+                //console.log(street,'street');
                 var wtcar = $('#rankcar').val();
                 var wtincome = $("#rankincome").val();
                 var wtstreet = $("#rankcomplaint").val();
@@ -199,20 +227,36 @@
                 if(wtstreet==''){
                     wtstreet=1;
                 }
-                var score= (wtcar*car)+(wtincome*income)+(wtstreet*street);
+                score= (wtcar*car)+(wtincome*income)+(wtstreet*street);
+                //console.log(score,layer.feature.properties['BoroCT2010']);
                 document.getElementById("score").innerHTML=Math.ceil(score/3)
                 sumwts=wtcar+wtincome+wtstreet;
                 //console.log(sumwts);
+                //if weights are changed then queue will update maps and top census tracts
                 queue.push(sumwts);
+                //if yearrange is changed then minqueue and maxqueus would track changes and update top census tracts.  
+                minqueue.push(min);
+                maxqueue.push(max);
                 //console.log(queue, queue.length)
                 if(queue.length>2){
                     queue.shift();
+                    
                 }
+                if(minqueue.length>2 || maxqueue.length>2){
+                    minqueue.shift();
+                    maxqueue.shift();
+                    }
                 if(queue.length>1 && queue[0]!=queue[1])
                  {
-                d3.selectAll("text").remove();
-                compliants(wtcar,wtincome,wtstreet);
+                    d3.selectAll("text").remove();
+                    compliants(wtcar,wtincome,wtstreet,max,min,bname);
                 }
+                else if((maxqueue.length>1 && maxqueue[0]!=maxqueue[1])||(minqueue.length>1 && minqueue[0]!=minqueue[1])){
+                    
+                    d3.selectAll("text").remove();
+                    compliants(wtcar,wtincome,wtstreet,max,min,bname);
+                }
+                
                 //console.log(rankcar);
             }
             weights();
@@ -283,8 +327,8 @@
        }
 
       var readdata=function(){
-      $.getJSON('data/geoargo1.geojson', function(state_data) {
-//        console.log(state_data);
+      $.getJSON('data/geoargo2.geojson', function(state_data) {
+        //console.log(state_data);
          
          geojson = L.geoJson(state_data,{
             style: style,
@@ -297,7 +341,10 @@
     $('.dropdown-menu li a').on('click', function(){
         if(k!=$(this).html()){
         map.removeLayer(geojson);
-        console.log(($(this).html()));
+        //console.log(($(this).html()));
+        console.log(min,max)
+        bname=$(this).html()
+        compliants(1,1,1,max,min,bname);
         k=($(this).html())
         readdata();}
     });
@@ -305,6 +352,6 @@
     </script>
        <script type="text/javascript" src="js/topten.js"> </script>
        <script>initbar();</script>
-      <script>compliants(1,1,1);</script>
+      <script>compliants(1,1,1,2016,2005);</script>
   </body>
 </html>

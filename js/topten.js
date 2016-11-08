@@ -1,7 +1,7 @@
 var w=250;
 var h =260;
-console.log("width is :"+w);
-console.log("height is :"+h);
+//console.log("width is :"+w);
+//console.log("height is :"+h);
 
 
 var margin = {top: 0, right: 50, bottom: 10, left: 20},
@@ -33,37 +33,61 @@ function Randomcolor() {
     return color;
 }
 
-var compliants = function(wcar,wincome,wstreet){
-    var link1='data/proto1.csv'
+var compliants = function(wcar,wincome,wstreet,max,min,boro='All'){
+    var link1='data/proto3.csv'
     d3.csv(""+link1,function(calls){
             data = calls.map(function(d){
-                //console.log(d['geometry'].replace(/\POLYGON |[()]/g,'').split(','))
-                geometry = (d['geometry'].replace(/\POLYGON |[()]|MULTI/g,'').split(','));
-                street = +(d['rstreet']);
-                income =  +(d['rincome']);
-                car=  +(d['rveh']);
-                census = (d['BoroCT2010'])
-                score = Math.ceil(((wstreet*street)+(wincome*income)+(wcar*car))/3);
-                return {"street":wstreet*street,"income":wincome*income,"car":wcar*car,"score":score,"census":census,"geometry":geometry};
+                 var readd3 = function(d){
+                        geometry = (d['geometry'].replace(/\POLYGON |[()]|MULTI/g,'').split(','));
+                        //street = +(d['rstreet']);
+                        var street=0
+                        if((max-min)!=11){
+                            for(i=min;i<=max;i++){
+                                street+=+(d['rstreet'+i]);
+                            }
+                            street=street/(max-min);
+                            }
+                        else{
+                            street=+(d['rstreet']);
+                        }
+                        income =  +(d['rincome']);
+                        car=  +(d['rveh']);
+                        census = (d['BoroCT2010'])
+                        geoLabel=(d['GEO.display-label'])
+                        boroName = d['BoroName']
+                        score = Math.ceil(((wstreet*street)+(wincome*income)+(wcar*car))/3);
+                     //console.log(score);
+                        return {"label":geoLabel,"score":score,"census":census,"geometry":geometry,"BoroName":boroName};
+                    }
+                    return readd3(d);
+                
+                
             })
-            bars(data);
+            bars(data,boro);
         })
         }
         
         var percent = d3.format('%');
 
-var bars = function(data){
+var bars = function(data,boro){
+    
             var max =d3.max(data,function(d){
                    return d['score'];
                    })
-                     
+            if(boro!='All'){
+                data= data.filter(function(data){
+                    //console.log(data.BoroName)
+                    return data.BoroName==boro;
+                })
+            }     
+            //console.log(data);
              var sorted = data.sort(function(x, y){
                return d3.descending(x.score, y.score);
             });
-            
+            //console.log(sorted);
             var getcoordinate=function(d){
                 coordinates=[]
-                console.log(d.geometry.length);
+                //console.log(d.geometry.length);
                 for(j=0;j<d.geometry.length;j++)
                 {
                     var v=d.geometry[j].trim().split(' ');
@@ -144,10 +168,10 @@ var bars = function(data){
                             }})
                     .text(function(d,i){
                             if(i<5){
-                            console.log(d.census)
-                            return i+1+'. '+parseInt(d.census)
+                            //console.log(d.census)
+                            return i+1+'. '+(d.label).split(',')[0]
                             }})
-                    .attr("font-size", "35px")
+                    .attr("font-size", "20px")
                 }
         
     function initbar()
