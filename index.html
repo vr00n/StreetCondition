@@ -72,13 +72,19 @@
                   max: max,
                   values: [ defm, defmax ],
                   slide: function( event, ui ) {
-                    $( "#"+a ).val( ui.values[ 0 ] + " - " + ui.values[ 1 ] );
                     
+                    
+                    $( "#"+a ).val( ui.values[ 0 ] + " - " + ui.values[ 1 ] );
+                    minyear=+($('#amount').val().split('-')[0].trim())
+                    maxyear=+($('#amount').val().split('-')[1].trim())
+                     
+                    compliants(1,1,1,maxyear,minyear,bname);
                   }
                 });
                 var y=$('#amount').val();
                 $( "#"+a ).val( "" + $( "#slider-"+v ).slider( "values", 0 ) +
                   " - " + $( "#slider-"+v ).slider( "values", 1 ) );
+               
               };
              
              year(2005,2016,2005,2016,'range','amount');
@@ -235,27 +241,20 @@
                 //if weights are changed then queue will update maps and top census tracts
                 queue.push(sumwts);
                 //if yearrange is changed then minqueue and maxqueus would track changes and update top census tracts.  
-                minqueue.push(min);
-                maxqueue.push(max);
+            
                 //console.log(queue, queue.length)
                 if(queue.length>2){
                     queue.shift();
                     
                 }
-                if(minqueue.length>2 || maxqueue.length>2){
-                    minqueue.shift();
-                    maxqueue.shift();
-                    }
+             
+//               needs update when weights are updated
                 if(queue.length>1 && queue[0]!=queue[1])
                  {
                     d3.selectAll("text").remove();
                     compliants(wtcar,wtincome,wtstreet,max,min,bname);
                 }
-                else if((maxqueue.length>1 && maxqueue[0]!=maxqueue[1])||(minqueue.length>1 && minqueue[0]!=minqueue[1])){
-                    
-                    d3.selectAll("text").remove();
-                    compliants(wtcar,wtincome,wtstreet,max,min,bname);
-                }
+              
                 
                 //console.log(rankcar);
             }
@@ -344,6 +343,7 @@
         //console.log(($(this).html()));
         console.log(min,max)
         bname=$(this).html()
+        console.log(min,max)
         compliants(1,1,1,max,min,bname);
         k=($(this).html())
         readdata();}
