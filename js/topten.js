@@ -33,7 +33,7 @@ function Randomcolor() {
     return color;
 }
 
-var compliants = function(wcar,wincome,wstreet,max,min,boro='All'){
+var compliants = function(wcar,wincome,wstreet,max,min,boro='All',srange='None'){
     var link1='data/proto3.csv'
     d3.csv(""+link1,function(calls){
             data = calls.map(function(d){
@@ -63,23 +63,32 @@ var compliants = function(wcar,wincome,wstreet,max,min,boro='All'){
                 
                 
             })
-            bars(data,boro);
+            bars(data,boro,srange);
         })
         }
         
         var percent = d3.format('%');
 
-var bars = function(data,boro){
-    
-            var max =d3.max(data,function(d){
-                   return d['score'];
-                   })
+var bars = function(data,boro,srange){
+            
+            maxscore_default = d3.max(data,function(d){
+                return d.score;
+            })
+            console.log(maxscore_default)
+            
             if(boro!='All'){
                 data= data.filter(function(data){
                     //console.log(data.BoroName)
                     return data.BoroName==boro;
                 })
-            }     
+            }
+    //console.log(srange);
+            if(srange!='None'){
+                data= data.filter(function(data){
+                    //console.log(srange[0]*maxscore_default*0.01,srange[1]*maxscore_default*0.01+1);
+                    return data.score>(srange[0]*maxscore_default*0.01) && data.score<(srange[1]*maxscore_default*0.01+1)
+                })
+            }
             //console.log(data);
              var sorted = data.sort(function(x, y){
                return d3.descending(x.score, y.score);
@@ -155,13 +164,13 @@ var bars = function(data,boro){
             
             var w = 7;
             bars
-                .attr("stroke-width", 5)
-                .attr("width", w)  
-                 .attr("x", 20)
+            //    .attr("stroke-width", 5)
+            //    .attr("width", w)  
+              //   .attr("x", 20)
                 .transition()
                     .delay(300)
                     .ease("linear")
-                    .attr("height",10)
+                 //   .attr("height",10)
                     .attr("y", function(d,i){
                             if(i<6){
                                 return (20+(30*i));
