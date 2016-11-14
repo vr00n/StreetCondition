@@ -110,6 +110,14 @@ var bars = function(data,boro,srange){
                 
                 return coordinates
             }
+        function getColor1(d) {
+            //console.log(d)
+          return d > 2000  ? '#54278f' :
+                 d > 1500   ? '#756bb1' :
+                 d > 1000   ? '#9e9ac8' :
+                 d > 500   ? '#cbc9e2' :
+                            '#f2f0f7';
+            }
             var polygon
             var c
             var colortip=function(cords){
@@ -121,7 +129,27 @@ var bars = function(data,boro,srange){
                 polygon = L.polygon(c,{color:'black',fillColor:Randomcolor(),fillOpacity: 0.99}).addTo(map);
                 //console.log(polygon)
             }
+            //console.log(sorted);
+            var polygon1=0
             
+          /*  if(polygon1!=0){
+               
+                map.removeLayer(polygon1)
+            }
+    
+            var colortip1=function(cords){
+                
+                //console.log(cords);
+                c=0
+                //polygon1=0
+                c = getcoordinate(cords)
+                //console.log(c)
+                polygon1 = L.polygon(c,{color:'black',fillColor: getColor1(cords.score),fillOpacity: 0.99}).addTo(map);
+                //console.log(polygon)
+            }*/
+            
+            //sorted.forEach(function(d,i){colortip1(d)});
+             //map.removeLayer(geojson);
              //console.log(sorted)
              var tip = d3.tip()
                       .attr('class', 'd3-tip')

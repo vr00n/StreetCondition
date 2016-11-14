@@ -17,6 +17,7 @@
     <script type="text/javascript" src="js/d3/d3.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/themes/css/cartodb.css" />
+    <link rel="icon" type="image/png" href="./favicon.png">  
       <script src="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/cartodb.js"></script>    
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
     <script src="js/Caged-d3-tip-3aa7df4/index.js"></script>
@@ -67,7 +68,7 @@
             var minyear = '';
             var maxyear = '';
             var minscore=0;
-            var maxscore=2085;
+            var maxscore=100;
             var maxscore_default=2085;
             var k='All';
             var wtcar = 1;
@@ -144,7 +145,8 @@
 
       //this function takes a value and returns a color based on which bucket the value falls between
       function getColor(d) {
-          return d > 1000  ? '#FC4E2A' :
+          
+          return d > 900  ? '#FC4E2A' :
                  d > 800   ? '#FD8D3C' :
                  d > 500   ? '#FEB24C' :
                  d > 100   ? '#FED976' :
@@ -153,7 +155,7 @@
    
 
     L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',{
-      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
+      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>,Developed by:<a href="http://nikhilsprofile.com">Nikhil Kishore</a>'
     }).addTo(map);
 
     var layerUrl = 'https://rgdonohue.cartodb.com/api/v2/viz/bcdbfe36-6f4f-11e5-833d-0e674067d321/viz.json';
@@ -246,10 +248,25 @@
                 if(wtcar==''){
                     wtcar=1;
                 }
+                else if(wtcar>5 || wtcar<0){
+                    $('#rankcar').effect("shake");
+                    $('#rankcar').val('');
+                    wtcar=1;
+                }
                 if(wtincome==''){
                     wtincome=1;
                 }
+                else if(wtincome>5 || wtincome<0){
+                    $('#rankincome').effect("shake");
+                    $('#rankincome').val('')
+                    wtincome=1
+                }
                 if(wtstreet==''){
+                    wtstreet=1;
+                }
+                else if(wtstreet>5 || wtstreet<0){
+                    $('#rankcomplaint').effect("shake");
+                    $('#rankcomplaint').val('')
                     wtstreet=1;
                 }
                 score= (wtcar*car)+(wtincome*income)+(wtstreet*street);
@@ -362,9 +379,9 @@
         if(k!=$(this).html()){
         map.removeLayer(geojson);
         //console.log(($(this).html()));
-        console.log(minyear,maxyear)
+       // console.log(minyear,maxyear)
         bname=$(this).html();
-        console.log(minyear,maxyear)
+        //console.log(minyear,maxyear)
         year(0,100,0,100,'score','amount1');
         minscore=0;
         maxscore=100;
