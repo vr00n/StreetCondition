@@ -25,8 +25,8 @@
   </head>
 
   <body>
-
     <div id="container">
+    <div id="title">Street Condition Scoring Tool</div>
     <div id="sidebar">
         <div id="score">
             <p>Score</p>
@@ -45,8 +45,15 @@
         </div>
         
         <div id="ranksection">
-            <input class='rank' id="rankcar" placeholder="Car" onblur="checkfields(this);" >X <input class='rank' id="rankincome"  placeholder="Income" onchange="checkfields(this);">X <input class='rank' id="rankcomplaint" placeholder="Complaint" onchange="checkfields(this);">
+            <!--<span class="tooltiptext">Tooltip text</span>-->
+            <input class='rank' id="rankcar" placeholder="1.0" onblur="checkfields(this);" data-toggle="tooltip" title="Car Weight" > 
+            <input class='rank' id="rankincome"  placeholder="1.0" onchange="checkfields(this);" data-toggle="tooltip" title="Income Weight"> <input class='rank' id="rankcomplaint" placeholder="1.0" onchange="checkfields(this);" data-toggle="tooltip" title="Street Complaint Weight">
         </div>
+        <script>
+            $(document).ready(function(){
+                $('[data-toggle="tooltip"]').tooltip();
+            });
+        </script>
         <div id="statistics"> 
             <p id='st1'><u class=stats id='requests'> 000 </u> Complaints at Census Tract <u class=stats id='ct' > Select </u> in <u class=stats id='nhood'> Select </u></p>
         </div>
@@ -114,12 +121,15 @@
             <p id="rankicon1"> Top Ranked </p>
              <span id="rankicon" class="glyphicon">&#xe155;</span><br><br>
             <div class="barchartcontainer"><svg id="svg4"></svg></div>
+            <button id='updatemap' type="button" data-toggle="tooltip" title="Update Map to current seetings" >Update Map
+              <span class="glyphicon glyphicon-play-circle"></span>  </button>   
         </div>
-        
-            
+          
         
       </div>
+        
       <div id="map">
+          
       </div>
 
     </div><!-- /.container -->
@@ -134,6 +144,7 @@
     var minqueue =[2];
     var maxqueue =[2];
     var map = L.map('map', {
+   
         scrollWheelZoom: false
       }).setView( [40.767802,-73.953266], 11);
 
@@ -145,10 +156,10 @@
       //this function takes a value and returns a color based on which bucket the value falls between
       function getColor(d) {
           
-          return d > 900  ? '#FC4E2A' :
-                 d > 800   ? '#FD8D3C' :
-                 d > 500   ? '#FEB24C' :
-                 d > 100   ? '#FED976' :
+          return d > 90  ? '#FC4E2A' :
+                 d > 60   ? '#FD8D3C' :
+                 d > 40   ? '#FEB24C' :
+                 d > 20   ? '#FED976' :
                             '#FFEDA0';
       }
    
@@ -170,11 +181,13 @@
       });
 
       function style(feature) {
-          //console.log(feature);
+          scorec=(wtcar*feature.properties['rveh'])+(wtincome*feature.properties['rincome'])+(wtstreet*feature.properties['rstreet']);
+          scorec=Math.ceil(((scorec/maxscore_default)*100)/3)
+          //console.log(scorec);
           if(feature.properties.BoroName==k || k=='All'){
               
               return {
-                  fillColor: getColor(feature.properties['Total']),
+                  fillColor: getColor(scorec),
                   weight: 2,
                   opacity: 1,
                   color: 'white',
@@ -184,7 +197,7 @@
           }
           else{
                return {
-                  fillColor: getColor(feature.properties['Total']),
+                  fillColor: getColor(scorec),
                   weight: 2,
                   opacity: 1,
                   color: 'white',
@@ -269,10 +282,8 @@
                     wtstreet=1;
                 }
                 score= (wtcar*car)+(wtincome*income)+(wtstreet*street);
-                //console.log(score,layer.feature.properties['BoroCT2010']);
-               document.getElementById("score").innerHTML=Math.ceil(((score/maxscore_default)*100)/3)
+                //console.log(score);
             
-                
                 sumwts=wtcar+wtincome+wtstreet;
                 //console.log(sumwts);
                 //if weights are changed then queue will update maps and top census tracts
@@ -291,6 +302,8 @@
                     //d3.selectAll("text").remove();
                     compliants(wtcar,wtincome,wtstreet,maxyear,minyear,bname,[minscore,maxscore]);
                 }
+                console.log(maxscore_default)
+                document.getElementById("score").innerHTML=Math.ceil(((score/maxscore_default)*100)/3)
               
                 
                 //console.log(rankcar);
@@ -336,11 +349,11 @@
         legend.onAdd = function (map) {
 
         var div = L.DomUtil.create('div', 'info legend'),
-        grades = [0,100,50,800,1000],
+        grades = [0,20,40,60,90],
         labels = [];
 
     // loop through our density intervals and generate a label with a colored square for each interval
-        div.innerHTML='<h4>Service Requests</h4>'
+        div.innerHTML='<h4>Score Quartiles</h4>'
         for (var i = 0; i < grades.length; i++) {
         div.innerHTML +='<i style="background:' + getColor(grades[i] + 1) + '"></i> ' +
             grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');

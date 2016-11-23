@@ -3,7 +3,6 @@ var h =260;
 //console.log("width is :"+w);
 //console.log("height is :"+h);
 
-
 var margin = {top: 0, right: 50, bottom: 10, left: 20},
         width = w - margin.left - margin.right,
         height = h - margin.top - margin.bottom;
@@ -122,15 +121,16 @@ var bars = function(data,boro,srange){
             var c
             var colortip=function(cords){
                 
-                c=0
-                polygon=0
+                //c=0
+                //polygon=0
                 c = getcoordinate(cords)
                 //console.log(c)
                 polygon = L.polygon(c,{color:'black',fillColor:Randomcolor(),fillOpacity: 0.99}).addTo(map);
-                //console.log(polygon)
+                //console.log(c[0])
             }
+            
             //console.log(sorted);
-            var polygon1=0
+           // var polygon1=0
             
           /*  if(polygon1!=0){
                
@@ -167,29 +167,27 @@ var bars = function(data,boro,srange){
                         .data(sorted)
  
             vis.call(tip);
-            
-            
             bars.enter()
                 .append("svg:text")
                 .attr("class", "bar")
                 .on('mouseover', function(d){
-              // console.log(d)
-            
-                colortip(d);   
+              //console.log(d)
+                
+                return colortip(d);   
             })
                 .on('mouseout', function(){
                 //d3.selectAll("text").remove();
-                
+                //
                 map.removeLayer(polygon);
-    
-                polygon=0
+                //polygon=0
+                
             })
-
+                .on('click',function(d){
+                
+                //return (this.tog = !this.tog) ?  colortip(d): map.removeLayer(polygon) ;
+            })
             bars.exit()
                 .remove()
-            
-            
-            
             var w = 7;
             bars
             //    .attr("stroke-width", 5)
@@ -218,8 +216,7 @@ var bars = function(data,boro,srange){
         var svg = d3.select("#svg4")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
-            .attr("preserveAspectRatio", "xMaxYMid")
-            .attr("viewBox", "0 0 280 280")
+            .attr("viewBox", "0 0 200 200")
             .classed("svg-container", true)
             .classed("svg-content-responsive", true); 
         
