@@ -28,9 +28,7 @@
     <div id="container">
     <div id="title">Street Condition Scoring Tool</div>
     <div id="sidebar">
-        <div id="score">
-            <p>Score</p>
-        </div>
+        
         <div class="dropdown">
         <button id='dd1' class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" >Borough
         <span class="caret"></span></button>
@@ -43,37 +41,63 @@
              <li><a href="#">Staten Island</a></li>
             </ul>
         </div>
-        
+        <div id="statistics"> 
+            <p id='st1'>Census Tract <u class=stats id='ct' > Select </u> in <u class=stats id='nhood'> Select </u> has response score of:</p>
+        </div>
+        <div id="score">
+            <p>Score</p>
+        </div>
+        <div id="sub" data-toggle="tooltip" title="(car_wt*per_capita_car)+(income_wt*median income)+(comptaint_wt*311_complain)+(SQUID_wt*SQUID_score)"><span class="glyphicon glyphicon-question-sign"></span></div>
+        <p style="float:left">Adjust Weight from 1-5 and then UPDATE the Map to see changes. Hover over map once weights are set</p>
         <div id="ranksection">
             <!--<span class="tooltiptext">Tooltip text</span>-->
             <input class='rank' id="rankcar" placeholder="1.0" onblur="checkfields(this);" data-toggle="tooltip" title="Car Weight" > 
-            <input class='rank' id="rankincome"  placeholder="1.0" onchange="checkfields(this);" data-toggle="tooltip" title="Income Weight"> <input class='rank' id="rankcomplaint" placeholder="1.0" onchange="checkfields(this);" data-toggle="tooltip" title="Street Complaint Weight">
+            <input class='rank' id="rankincome"  placeholder="1.0" onchange="checkfields(this);" data-toggle="tooltip" title="Income Weight"> 
+            <input class='rank' id="rankcomplaint" placeholder="1.0" onchange="checkfields(this);" data-toggle="tooltip" title="Street Complaint Weight">
+            <input class='rank' id="ranksquid" placeholder="1.0" onchange="checkfields(this);" data-toggle="tooltip" title="Squid Score Weight">
+        <div style="float:left;width:100%;">
+            <p class='textboxlabels'>Car Ownership&nbsp;&nbsp;&nbsp;311 Model&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Median Income&nbsp;&nbsp;&nbsp;&nbsp;SQUID Score</p>
+            
         </div>
+        </div>
+        <!--
+        <button id='updatemap' type="button" data-toggle="tooltip" title="Update Map to current seetings" >Update Map
+        <span class="glyphicon glyphicon-play-circle"></span>  </button>   
         <script>
             $(document).ready(function(){
                 $('[data-toggle="tooltip"]').tooltip();
             });
         </script>
-        <div id="statistics"> 
-            <p id='st1'><u class=stats id='requests'> 000 </u> Complaints at Census Tract <u class=stats id='ct' > Select </u> in <u class=stats id='nhood'> Select </u></p>
+        -->
+        <div id='rankall'>
+            <p id="rankicon1"> Top Ranked </p>
+             <span id="rankicon" class="glyphicon">&#xe155;</span><br><br>
+            <div class="barchartcontainer"><svg id="svg4"></svg></div>
+            
         </div>
-        <div id="slider">
+          
+        
+      </div>
+        
+      <div id="map">
+          <div id=inspector>
+          <div class="slider">
          <p>
              <label for="amount">Year range:</label>
              <input type="text" id="amount" readonly style="border:0; color:black; font-weight:bold; margin-top:10">
         </p>
         <div id="slider-range"></div><br>
         </div>
-        <div id="slider">
+        <div class="slider">
          <p>
              <label for="amount1">Score range:</label>
              <input type="text" id="amount1" readonly style="border:0; color:black; font-weight:bold; margin-top:10">
         </p>
         <div id="slider-score"></div><br>
         </div>
-         <script>
-            var minyear = '';
-            var maxyear = '';
+           <script>
+            var minyear = 2005;
+            var maxyear = 2016;
             var minscore=0;
             var maxscore=100;
             var maxscore_default=2085;
@@ -98,6 +122,10 @@
                     maxscore=+($('#amount1').val().split('-')[1].trim())
                     //console.log(wtcar,wtincome,wtstreet);
                     compliants(wtcar,wtincome,wtstreet,maxyear,minyear,bname,[minscore,maxscore]);
+                    if(v=='range'){
+                    map.removeLayer(geojson);
+                    readdata();
+                    }
                   }
                 });
                 var y=$('#amount').val();
@@ -117,19 +145,7 @@
                 }
             }
         </script>
-        <div id='rankall'>
-            <p id="rankicon1"> Top Ranked </p>
-             <span id="rankicon" class="glyphicon">&#xe155;</span><br><br>
-            <div class="barchartcontainer"><svg id="svg4"></svg></div>
-            <button id='updatemap' type="button" data-toggle="tooltip" title="Update Map to current seetings" >Update Map
-              <span class="glyphicon glyphicon-play-circle"></span>  </button>   
-        </div>
-          
-        
-      </div>
-        
-      <div id="map">
-          
+          </div>
       </div>
 
     </div><!-- /.container -->
@@ -181,14 +197,27 @@
       });
 
       function style(feature) {
-          scorec=(wtcar*feature.properties['rveh'])+(wtincome*feature.properties['rincome'])+(wtstreet*feature.properties['rstreet']);
+          streetcol=0
+          //console.log(maxyear,minyear);
+            if((maxyear-minyear)!=11)
+                    {
+                        for(i=minyear;i<=maxyear;i++){
+                        streetcol+=parseInt(feature.properties['rstreet'+i]);
+                    }
+                   // console.log(maxyear-minyear)
+                    streetcol=streetcol/(maxyear-minyear);
+                    }
+                else{
+                    streetcol=parseInt(feature.properties['rstreet']);
+                }
+          scorec=(wtcar*feature.properties['rveh'])+(wtincome*feature.properties['rincome'])+(wtstreet*streetcol);
           scorec=Math.ceil(((scorec/maxscore_default)*100)/3)
-          //console.log(scorec);
+          console.log(streetcol);
           if(feature.properties.BoroName==k || k=='All'){
               
               return {
                   fillColor: getColor(scorec),
-                  weight: 2,
+                  weight: 0.5,
                   opacity: 1,
                   color: 'white',
                   dashArray: '1',
@@ -198,7 +227,7 @@
           else{
                return {
                   fillColor: getColor(scorec),
-                  weight: 2,
+                  weight: 0.5,
                   opacity: 1,
                   color: 'white',
                   dashArray: '1',
@@ -210,8 +239,6 @@
         
 
         //this function is set to run when a user mouses over any polygon
-     
-        
         var bname='All';
         var score = 'All';
         function mouseoverFunction(e) {
@@ -233,8 +260,8 @@
                 total+=layer.feature.properties[i+'_1'];
             }
             //console.log(layer.feature.properties['Total']);
-            document.getElementById("requests").innerHTML=total;
-            document.getElementById("ct").innerHTML=layer.feature.properties['BoroCT2010'];
+            //document.getElementById("requests").innerHTML=total;
+            document.getElementById("ct").innerHTML=layer.feature.properties['BoroCT2010'].toString().slice(6,9);
             document.getElementById("nhood").innerHTML=layer.feature.properties['NTAName'];
           
             weights = function(){
@@ -301,6 +328,9 @@
                  {
                     //d3.selectAll("text").remove();
                     compliants(wtcar,wtincome,wtstreet,maxyear,minyear,bname,[minscore,maxscore]);
+                    map.removeLayer(geojson);
+                    readdata();
+                    
                 }
                 console.log(maxscore_default)
                 document.getElementById("score").innerHTML=Math.ceil(((score/maxscore_default)*100)/3)
@@ -324,7 +354,7 @@
         function resetHighlight(e) {
           geojson.resetStyle(e.target);
             //var layer = e.target;
-            document.getElementById("requests").innerHTML=0
+            //document.getElementById("requests").innerHTML=0
             document.getElementById("ct").innerHTML="Select"
             document.getElementById("nhood").innerHTML="Select"
             document.getElementById("score").innerHTML="Score"

@@ -109,14 +109,7 @@ var bars = function(data,boro,srange){
                 
                 return coordinates
             }
-        function getColor1(d) {
-            //console.log(d)
-          return d > 2000  ? '#54278f' :
-                 d > 1500   ? '#756bb1' :
-                 d > 1000   ? '#9e9ac8' :
-                 d > 500   ? '#cbc9e2' :
-                            '#f2f0f7';
-            }
+        
             var polygon
             var c
             var colortip=function(cords){
@@ -171,13 +164,18 @@ var bars = function(data,boro,srange){
                 .append("svg:text")
                 .attr("class", "bar")
                 .on('mouseover', function(d){
-              //console.log(d)
+                //console.log(d.census)
+                document.getElementById("ct").innerHTML=d.census.toString().slice(6,9);
+                document.getElementById("nhood").innerHTML=d.BoroName;
+                document.getElementById("score").innerHTML=Math.ceil(((d.score/maxscore_default)*100));
                 
                 return colortip(d);   
             })
                 .on('mouseout', function(){
                 //d3.selectAll("text").remove();
-                //
+                document.getElementById("ct").innerHTML='Select'
+                document.getElementById("nhood").innerHTML='Select'
+                document.getElementById("score").innerHTML='Score'
                 map.removeLayer(polygon);
                 //polygon=0
                 
