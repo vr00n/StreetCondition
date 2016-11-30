@@ -30,7 +30,7 @@
     <div id="sidebar">
         
         <div class="dropdown">
-        <button id='dd1' class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" >Borough
+            <button id='dd1' class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" value='Button'> Borough
         <span class="caret"></span></button>
          <ul class="dropdown-menu">
              <li><a href="#">All</a></li>
@@ -162,7 +162,7 @@
     var map = L.map('map', {
    
         scrollWheelZoom: false
-      }).setView( [40.767802,-73.953266], 11);
+      }).setView( [40.727802,-73.893266], 11);
 
 
 
@@ -371,7 +371,7 @@
 
         // method that we will use to update the control based on feature properties passed
         info.update = function (props) {
-            this._div.innerHTML = '<h4>Total Requests: 679,538'+'</h4><h4>Total GeoCoded: 71663</h4';
+            this._div.innerHTML = '<h5>Last updated: 2016-10-18</h5>'+'<h5>Total GeoCoded: <b>71663</b?</h5>'+'<h5><b>679,538</b> of requests<br>programmatically geocoded '+'</h5>';
         };
         info.addTo(map);
         var legend = L.control({position: 'bottomright'});
@@ -423,6 +423,7 @@
         //console.log(($(this).html()));
        // console.log(minyear,maxyear)
         bname=$(this).html();
+        document.getElementById('dd1').innerHTML=bname
         //console.log(minyear,maxyear)
         year(0,100,0,100,'score','amount1');
         minscore=0;
