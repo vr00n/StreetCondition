@@ -48,7 +48,7 @@
             <p>Score</p>
         </div>
         <div id="sub" data-toggle="tooltip" title="(car_wt*per_capita_car)+(income_wt*median income)+(comptaint_wt*311_complain)+(SQUID_wt*SQUID_score)"><span class="glyphicon glyphicon-question-sign"></span></div>
-        <p style="float:left">Adjust Weight from 1-5 and then UPDATE the Map to see changes. Hover over map once weights are set</p>
+        <p style="float:left">Adjust Weight from 1-5 and hover over map to visualize.</p>
         <div id="ranksection">
             <!--<span class="tooltiptext">Tooltip text</span>-->
             <input class='rank' id="rankcar" placeholder="1.0" onblur="checkfields(this);" data-toggle="tooltip" title="Car Weight" > 
@@ -62,13 +62,13 @@
         </div>
         <!--
         <button id='updatemap' type="button" data-toggle="tooltip" title="Update Map to current seetings" >Update Map
-        <span class="glyphicon glyphicon-play-circle"></span>  </button>   
+        <span class="glyphicon glyphicon-play-circle"></span>  </button>   --> 
         <script>
             $(document).ready(function(){
                 $('[data-toggle="tooltip"]').tooltip();
             });
         </script>
-        -->
+       
         <div id='rankall'>
             <p id="rankicon1"> Top Ranked </p>
              <span id="rankicon" class="glyphicon">&#xe155;</span><br><br>
@@ -212,7 +212,7 @@
                 }
           scorec=(wtcar*feature.properties['rveh'])+(wtincome*feature.properties['rincome'])+(wtstreet*streetcol);
           scorec=Math.ceil(((scorec/maxscore_default)*100)/3)
-          console.log(streetcol);
+          //console.log(streetcol);
           if(feature.properties.BoroName==k || k=='All'){
               
               return {
@@ -332,7 +332,7 @@
                     readdata();
                     
                 }
-                console.log(maxscore_default)
+                //console.log(maxscore_default)
                 document.getElementById("score").innerHTML=Math.ceil(((score/maxscore_default)*100)/3)
               
                 
