@@ -75,7 +75,7 @@ var bars = function(data,boro,srange){
             maxscore_default = d3.max(data,function(d){
                 return d.score;
             })
-            console.log(maxscore_default)
+            //console.log(maxscore_default)
             
             if(boro!='All'){
                 data= data.filter(function(data){

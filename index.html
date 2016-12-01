@@ -21,7 +21,7 @@
       <script src="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/cartodb.js"></script>    
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
     <script src="js/Caged-d3-tip-3aa7df4/index.js"></script>
-   
+   <!--<script src="http://libs.cartocdn.com/cartodb.js/v3/3.15/cartodb.js"></script>-->
   </head>
 
   <body>
@@ -151,7 +151,7 @@
 
     </div><!-- /.container -->
 
-    <script src="http://libs.cartocdn.com/cartodb.js/v3/3.15/cartodb.js"></script>
+    
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
     <script>
    
@@ -342,6 +342,7 @@
                     compliants(wtcar,wtincome,wtstreet,wtsquid,maxyear,minyear,bname,[minscore,maxscore]);
                     map.removeLayer(geojson);
                     readdata();
+                    //layer.bringToFront();
                     
                 }
                 //console.log(maxscore_default)
@@ -419,7 +420,7 @@
 
       var readdata=function(){
       $.getJSON('data/master.geojson', function(state_data) {
-        console.log(state_data);
+        //console.log(state_data);
          
          geojson = L.geoJson(state_data,{
             style: style,
