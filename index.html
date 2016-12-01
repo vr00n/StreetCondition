@@ -42,13 +42,13 @@
             </ul>
         </div>
         <div id="statistics"> 
-            <p id='st1'>Census Tract <u class=stats id='ct' > Select </u> in <u class=stats id='nhood'> Select </u> has response score of:</p>
+            <p id='st1'>Census Tract <u class=stats id='ct' > Select </u> in <u class=stats id='nhood'> Select </u>, <u class=stats id='boro'>Select </u> has response score of:</p>
         </div>
         <div id="score">
             <p>Score</p>
         </div>
         <div id="sub" data-toggle="tooltip" title="(car_wt*per_capita_car)+(income_wt*median income)+(comptaint_wt*311_complain)+(SQUID_wt*SQUID_score)"><span class="glyphicon glyphicon-question-sign"></span></div>
-        <p style="float:left">Adjust Weight from 1-5 and hover over map to visualize.</p>
+        <h6 style="float:left"><i>Adjust Weight from 1-5 and hover over map to visualize.</i></h6>
         <div id="ranksection">
             <!--<span class="tooltiptext">Tooltip text</span>-->
             <input class='rank' id="rankcar" placeholder="1.0" onblur="checkfields(this);" data-toggle="tooltip" title="Car Weight" > 
@@ -105,6 +105,7 @@
             var wtcar = 1;
             var wtincome = 1;
             var wtstreet = 1;
+            var wtsquid = 1;
             var year = function(min,max,defm,defmax,v,a) {
             
                 $( "#slider-"+v ).slider({
@@ -121,7 +122,7 @@
                     minscore=+($('#amount1').val().split('-')[0].trim())
                     maxscore=+($('#amount1').val().split('-')[1].trim())
                     //console.log(wtcar,wtincome,wtstreet);
-                    compliants(wtcar,wtincome,wtstreet,maxyear,minyear,bname,[minscore,maxscore]);
+                    compliants(wtcar,wtincome,wtstreet,wtsquid,maxyear,minyear,bname,[minscore,maxscore]);
                     if(v=='range'){
                     map.removeLayer(geojson);
                     readdata();
@@ -210,8 +211,8 @@
                 else{
                     streetcol=parseInt(feature.properties['rstreet']);
                 }
-          scorec=(wtcar*feature.properties['rveh'])+(wtincome*feature.properties['rincome'])+(wtstreet*streetcol);
-          scorec=Math.ceil(((scorec/maxscore_default)*100)/3)
+          scorec=(wtcar*feature.properties['rveh'])+(wtincome*feature.properties['rincome'])+(wtstreet*streetcol)+(wtsquid*feature.properties['squid']);
+          scorec=Math.ceil(((scorec/maxscore_default)*100)/4)
           //console.log(streetcol);
           if(feature.properties.BoroName==k || k=='All'){
               
@@ -263,10 +264,12 @@
             //document.getElementById("requests").innerHTML=total;
             document.getElementById("ct").innerHTML=layer.feature.properties['BoroCT2010'].toString().slice(6,9);
             document.getElementById("nhood").innerHTML=layer.feature.properties['NTAName'];
+            document.getElementById("boro").innerHTML=layer.feature.properties['BoroName'];
           
             weights = function(){
                 var car = parseInt(layer.feature.properties['rveh']);
                 var income=parseInt(layer.feature.properties['rincome']);
+                var squid=parseInt(layer.feature.properties['squid']);
                 var street=0
                 // if min and max year is custom selected then mean of selected year's rank is returned as effective net complaint rank
                 if((maxyear-minyear)!=11)
@@ -284,6 +287,7 @@
                 wtcar = $('#rankcar').val();
                 wtincome = $("#rankincome").val();
                 wtstreet = $("#rankcomplaint").val();
+                wtsquid= $("#ranksquid").val();
                 if(wtcar==''){
                     wtcar=1;
                 }
@@ -308,10 +312,18 @@
                     $('#rankcomplaint').val('')
                     wtstreet=1;
                 }
-                score= (wtcar*car)+(wtincome*income)+(wtstreet*street);
+                if(wtsquid==''){
+                    wtsquid=1;
+                }
+                else if(wtsquid>5 || wtsquid<0){
+                    $('#ranksquid').effect("shake");
+                    $('#ranksquid').val('')
+                    wtsquid=1;
+                }
+                score= (wtcar*car)+(wtincome*income)+(wtstreet*street)+(wtsquid*squid);
                 //console.log(score);
             
-                sumwts=wtcar+wtincome+wtstreet;
+                sumwts=wtcar+wtincome+wtstreet+wtsquid;
                 //console.log(sumwts);
                 //if weights are changed then queue will update maps and top census tracts
                 queue.push(sumwts);
@@ -327,13 +339,13 @@
                 if(queue.length>1 && queue[0]!=queue[1])
                  {
                     //d3.selectAll("text").remove();
-                    compliants(wtcar,wtincome,wtstreet,maxyear,minyear,bname,[minscore,maxscore]);
+                    compliants(wtcar,wtincome,wtstreet,wtsquid,maxyear,minyear,bname,[minscore,maxscore]);
                     map.removeLayer(geojson);
                     readdata();
                     
                 }
                 //console.log(maxscore_default)
-                document.getElementById("score").innerHTML=Math.ceil(((score/maxscore_default)*100)/3)
+                document.getElementById("score").innerHTML=Math.ceil(((score/maxscore_default)*100)/4)
               
                 
                 //console.log(rankcar);
@@ -406,8 +418,8 @@
        }
 
       var readdata=function(){
-      $.getJSON('data/geoargo2.geojson', function(state_data) {
-        //console.log(state_data);
+      $.getJSON('data/master.geojson', function(state_data) {
+        console.log(state_data);
          
          geojson = L.geoJson(state_data,{
             style: style,
@@ -429,10 +441,10 @@
         minscore=0;
         maxscore=100;
         if(minscore==''){
-            compliants(wtcar,wtincome,wtstreet,maxyear,minyear,bname);
+            compliants(wtcar,wtincome,wtstreet,wtsquid,maxyear,minyear,bname);
         }
         else{
-               compliants(wtcar,wtincome,wtstreet,maxyear,minyear,bname,[minscore,maxscore]); 
+               compliants(wtcar,wtincome,wtstreet,wtsquid,maxyear,minyear,bname,[minscore,maxscore]); 
             }
         k=($(this).html())
         readdata();}
@@ -441,7 +453,7 @@
     </script>
        <script type="text/javascript" src="js/topten.js"> </script>
        <script>initbar();</script>
-      <script>compliants(1,1,1,2016,2005);</script>
+      <script>compliants(1,1,1,1,2016,2005);</script>
       <script>
           console.log("Depelover? Looking for source code? Here is the link to gitub account");
           console.log("https://github.com/nk1877/StreetCondition/tree/gh-pages")

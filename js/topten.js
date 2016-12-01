@@ -32,8 +32,8 @@ function Randomcolor() {
     return color;
 }
 
-var compliants = function(wcar,wincome,wstreet,max,min,boro='All',srange='None'){
-    var link1='data/proto3.csv'
+var compliants = function(wcar,wincome,wstreet,wsquid,max,min,boro='All',srange='None'){
+    var link1='data/master5.csv'
     d3.csv(""+link1,function(calls){
             data = calls.map(function(d){
                  var readd3 = function(d){
@@ -54,9 +54,11 @@ var compliants = function(wcar,wincome,wstreet,max,min,boro='All',srange='None')
                         census = (d['BoroCT2010'])
                         geoLabel=(d['GEO.display-label'])
                         boroName = d['BoroName']
-                        score = Math.ceil(((wstreet*street)+(wincome*income)+(wcar*car))/3);
+                        squid = d['squid']
+                        nbrhood = d['NTAName']
+                        score = Math.ceil(((wstreet*street)+(wincome*income)+(wcar*car)+(wsquid*squid))/4);
                      //console.log(score);
-                        return {"label":geoLabel,"score":score,"census":census,"geometry":geometry,"BoroName":boroName};
+                        return {"label":geoLabel,"score":score,"census":census,"geometry":geometry,"BoroName":boroName,"neighbor":nbrhood};
                     }
                     return readd3(d);
                 
@@ -166,7 +168,8 @@ var bars = function(data,boro,srange){
                 .on('mouseover', function(d){
                 //console.log(d.census)
                 document.getElementById("ct").innerHTML=d.census.toString().slice(6,9);
-                document.getElementById("nhood").innerHTML=d.BoroName;
+                document.getElementById("nhood").innerHTML=d.neighbor
+                document.getElementById("boro").innerHTML=d.BoroName;
                 document.getElementById("score").innerHTML=Math.ceil(((d.score/maxscore_default)*100));
                 
                 return colortip(d);   
@@ -175,6 +178,7 @@ var bars = function(data,boro,srange){
                 //d3.selectAll("text").remove();
                 document.getElementById("ct").innerHTML='Select'
                 document.getElementById("nhood").innerHTML='Select'
+                document.getElementById("boro").innerHTML='Select'
                 document.getElementById("score").innerHTML='Score'
                 map.removeLayer(polygon);
                 //polygon=0
