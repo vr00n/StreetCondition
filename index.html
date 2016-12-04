@@ -23,10 +23,11 @@
     <script src="js/Caged-d3-tip-3aa7df4/index.js"></script>
    <!--<script src="http://libs.cartocdn.com/cartodb.js/v3/3.15/cartodb.js"></script>-->
   </head>
-
   <body>
     <div id="container">
     <div id="title">Street Condition Scoring Tool</div>
+    <div id='menumobile'>&#9776; </div>
+    
     <div id="sidebar">
         
         <div class="dropdown">
@@ -460,5 +461,18 @@
           console.log("Hi, I am Nikhil, Developer of the webtool");
           console.log("More information about men availabe at http://www.nikhilsprofile.com/")
       </script>
+      <script>
+        var toggle=0
+        $('#menumobile').click(function(){
+            if(toggle==0){
+                $('#sidebar').css('display','block');
+                toggle=1
+            }
+            else{
+                $('#sidebar').css('display','none');
+                toggle=0
+            }
+        })
+        </script>
   </body>
 </html>
