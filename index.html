@@ -58,6 +58,7 @@
             <input class='rank' id="rankincome"  placeholder="1.0" onchange="checkfields(this);" data-toggle="tooltip" title="Income Weight"> 
             <input class='rank' id="rankcomplaint" placeholder="1.0" onchange="checkfields(this);" data-toggle="tooltip" title="Street Complaint Weight">
             <input class='rank' id="ranksquid" placeholder="1.0" onchange="checkfields(this);" data-toggle="tooltip" title="Squid Score Weight">
+            <!--<span id='update' class="glyphicon glyphicon-menu-right"></span> -->
         <div style="float:left;width:100%;">
             <p class='textboxlabels'>Car Ownership&nbsp;&nbsp;&nbsp;311 Model&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Median Income&nbsp;&nbsp;&nbsp;&nbsp;SQUID Score</p>
             
@@ -66,6 +67,17 @@
         <!--
         <button id='updatemap' type="button" data-toggle="tooltip" title="Update Map to current seetings" >Update Map
         <span class="glyphicon glyphicon-play-circle"></span>  </button>   --> 
+        <!--<script>
+            $('#update').on('click',function()
+                            {
+                wtcar = $('#rankcar').val();
+                wtincome = $("#rankincome").val();
+                wtstreet = $("#rankcomplaint").val();
+                wtsquid= $("#ranksquid").val();
+                map.removeLayer(geojson);
+                readdata();
+            });
+        </script> -->
         <script>
             $(document).ready(function(){
                 $('[data-toggle="tooltip"]').tooltip();
@@ -89,14 +101,14 @@
              <label for="amount">Year range:</label>
              <input type="text" id="amount" readonly style="border:0; color:black; font-weight:bold; margin-top:10">
         </p>
-        <div id="slider-range"></div><br>
+        <div id="slider-range" style="width:92%"></div><br>
         </div>
         <div class="slider">
          <p>
-             <label for="amount1">Score range:</label>
+             <label for="amount1" >Score range:</label>
              <input type="text" id="amount1" readonly style="border:0; color:black; font-weight:bold; margin-top:10">
         </p>
-        <div id="slider-score"></div><br>
+        <div id="slider-score" style="width:90%"></div><br>
         </div>
            <script>
             var minyear = 2005;
@@ -214,7 +226,7 @@
                 else{
                     streetcol=parseInt(feature.properties['rstreet']);
                 }
-          scorec=(wtcar*feature.properties['rveh'])+(wtincome*feature.properties['rincome'])+(wtstreet*streetcol)+(wtsquid*feature.properties['squid']);
+          scorec=(wtcar*feature.properties['rveh'])+(wtincome*(2159-feature.properties['rincome']))+(wtstreet*streetcol)+(wtsquid*feature.properties['squid']);
           scorec=Math.ceil(((scorec/maxscore_default)*100)/4)
           //console.log(streetcol);
           if(feature.properties.BoroName==k || k=='All Boroughs' && scorec<=maxscore && scorec>=minscore){
@@ -323,7 +335,7 @@
                     $('#ranksquid').val('');
                     wtsquid=1;
                 }
-                score= (wtcar*car)+(wtincome*income)+(wtstreet*street)+(wtsquid*squid);
+                score= (wtcar*car)+(wtincome*(2159-income))+(wtstreet*street)+(wtsquid*squid);
                 //console.log(score);
             
                 sumwts=wtcar+wtincome+wtstreet+wtsquid;

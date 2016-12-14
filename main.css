@@ -30,7 +30,7 @@ html, body, #container{
     background-color: white;
     float: right;
     position: relative;
-    z-index: 2;
+    z-index: 314159;
     opacity: 0.8;
     border-radius: 15px;
     
@@ -120,8 +120,9 @@ html, body, #container{
 }
 .slider{
     margin-top: 2%;
-    margin-left: 3%;
+    margin-left: 15px;
     float: left;
+
 }
 #rankall{
     float: left;

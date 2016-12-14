@@ -56,7 +56,7 @@ var compliants = function(wcar,wincome,wstreet,wsquid,max,min,boro='All Boroughs
                         boroName = d['BoroName']
                         squid = d['squid']
                         nbrhood = d['NTAName']
-                        score = Math.ceil(((wstreet*street)+(wincome*income)+(wcar*car)+(wsquid*squid))/4);
+                        score = Math.ceil(((wstreet*street)+(wincome*(2159-income))+(wcar*car)+(wsquid*squid))/4);
                      //console.log(score);
                         return {"label":geoLabel,"score":score,"census":census,"geometry":geometry,"BoroName":boroName,"neighbor":nbrhood};
                     }
@@ -120,6 +120,7 @@ var bars = function(data,boro,srange){
                 c = getcoordinate(cords)
                 //console.log(c)
                 polygon = L.polygon(c,{color:'black',fillColor:Randomcolor(),fillOpacity: 0.99}).addTo(map);
+                
                 //console.log(polygon)
                 return polygon
                 //console.log(c[0])
