@@ -21,6 +21,8 @@
       <script src="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/cartodb.js"></script>    
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
     <script src="js/Caged-d3-tip-3aa7df4/index.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.2/dist/leaflet.css" />
+   <script src="https://unpkg.com/leaflet@1.0.2/dist/leaflet.js"></script>
    <!--<script src="http://libs.cartocdn.com/cartodb.js/v3/3.15/cartodb.js"></script>-->
   </head>
   <body>
@@ -31,10 +33,10 @@
     <div id="sidebar">
         
         <div class="dropdown">
-            <button id='dd1' class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" value='Button'> All
+            <button id='dd1' class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" value='Button'> All Boroughs
         <span class="caret"></span></button>
          <ul class="dropdown-menu">
-             <li><a href="#">All</a></li>
+             <li><a href="#">All Boroughs</a></li>
              <li><a href="#">Manhattan</a></li>
              <li><a href="#">Brooklyn</a></li>
              <li><a href="#">Bronx</a></li>
@@ -102,7 +104,7 @@
             var minscore=0;
             var maxscore=100;
             var maxscore_default=2085;
-            var k='All';
+            var k='All Boroughs';
             var wtcar = 1;
             var wtincome = 1;
             var wtstreet = 1;
@@ -118,16 +120,16 @@
                     
                     
                     $( "#"+a ).val( ui.values[ 0 ] + " - " + ui.values[ 1 ] );
-                    minyear=+($('#amount').val().split('-')[0].trim())
-                    maxyear=+($('#amount').val().split('-')[1].trim())
-                    minscore=+($('#amount1').val().split('-')[0].trim())
-                    maxscore=+($('#amount1').val().split('-')[1].trim())
+                    minyear=+($('#amount').val().split('-')[0].trim());
+                    maxyear=+($('#amount').val().split('-')[1].trim());
+                    minscore=+($('#amount1').val().split('-')[0].trim());
+                    maxscore=+($('#amount1').val().split('-')[1].trim());
                     //console.log(wtcar,wtincome,wtstreet);
                     compliants(wtcar,wtincome,wtstreet,wtsquid,maxyear,minyear,bname,[minscore,maxscore]);
-                    if(v=='range'){
+                    
                     map.removeLayer(geojson);
                     readdata();
-                    }
+                    
                   }
                 });
                 var y=$('#amount').val();
@@ -215,7 +217,7 @@
           scorec=(wtcar*feature.properties['rveh'])+(wtincome*feature.properties['rincome'])+(wtstreet*streetcol)+(wtsquid*feature.properties['squid']);
           scorec=Math.ceil(((scorec/maxscore_default)*100)/4)
           //console.log(streetcol);
-          if(feature.properties.BoroName==k || k=='All'){
+          if(feature.properties.BoroName==k || k=='All Boroughs' && scorec<=maxscore && scorec>=minscore){
               
               return {
                   fillColor: getColor(scorec),
@@ -241,7 +243,7 @@
         
 
         //this function is set to run when a user mouses over any polygon
-        var bname='All';
+        var bname='All Boroughs';
         var score = 'All';
         function mouseoverFunction(e) {
           var layer = e.target;
@@ -302,15 +304,15 @@
                 }
                 else if(wtincome>5 || wtincome<0){
                     $('#rankincome').effect("shake");
-                    $('#rankincome').val('')
-                    wtincome=1
+                    $('#rankincome').val('');
+                    wtincome=1;
                 }
                 if(wtstreet==''){
                     wtstreet=1;
                 }
                 else if(wtstreet>5 || wtstreet<0){
                     $('#rankcomplaint').effect("shake");
-                    $('#rankcomplaint').val('')
+                    $('#rankcomplaint').val('');
                     wtstreet=1;
                 }
                 if(wtsquid==''){
@@ -318,7 +320,7 @@
                 }
                 else if(wtsquid>5 || wtsquid<0){
                     $('#ranksquid').effect("shake");
-                    $('#ranksquid').val('')
+                    $('#ranksquid').val('');
                     wtsquid=1;
                 }
                 score= (wtcar*car)+(wtincome*income)+(wtstreet*street)+(wtsquid*squid);
@@ -411,7 +413,7 @@
 
       function onEachFeature(feature, layer) {
            //console.log(layer.feature.properties.BoroName)
-        if(layer.feature.properties.BoroName==k || k=='All' ){
+        if(layer.feature.properties.BoroName==k || k=='All Boroughs' ){
          layer.on({
              mouseover: mouseoverFunction,
              mouseout: resetHighlight
@@ -449,7 +451,7 @@
         else{
                compliants(wtcar,wtincome,wtstreet,wtsquid,maxyear,minyear,bname,[minscore,maxscore]); 
             }
-        k=($(this).html())
+        k=($(this).html());
         readdata();}
     });
         //readdata();
@@ -462,17 +464,18 @@
           console.log("More information about men availabe at http://www.nikhilsprofile.com/")
       </script>
       <script>
-        var toggle=0
+        var toggle=0;
         $('#menumobile').click(function(){
             if(toggle==0){
                 $('#sidebar').css('display','block');
-                toggle=1
+                toggle=1;
             }
             else{
                 $('#sidebar').css('display','none');
-                toggle=0
+                toggle=0;
             }
         })
+        
         </script>
   </body>
 </html>

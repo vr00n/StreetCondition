@@ -2,7 +2,7 @@ var w=250;
 var h =260;
 //console.log("width is :"+w);
 //console.log("height is :"+h);
-
+    var kol=0;
 var margin = {top: 0, right: 50, bottom: 10, left: 20},
         width = w - margin.left - margin.right,
         height = h - margin.top - margin.bottom;
@@ -32,7 +32,7 @@ function Randomcolor() {
     return color;
 }
 
-var compliants = function(wcar,wincome,wstreet,wsquid,max,min,boro='All',srange='None'){
+var compliants = function(wcar,wincome,wstreet,wsquid,max,min,boro='All Boroughs',srange='None'){
     var link1='data/master5.csv'
     d3.csv(""+link1,function(calls){
             data = calls.map(function(d){
@@ -77,7 +77,7 @@ var bars = function(data,boro,srange){
             })
             //console.log(maxscore_default)
             
-            if(boro!='All'){
+            if(boro!='All Boroughs'){
                 data= data.filter(function(data){
                     //console.log(data.BoroName)
                     return data.BoroName==boro;
@@ -112,8 +112,7 @@ var bars = function(data,boro,srange){
                 return coordinates
             }
         
-            var polygon
-            var c
+
             var colortip=function(cords){
                 
                 //c=0
@@ -121,46 +120,24 @@ var bars = function(data,boro,srange){
                 c = getcoordinate(cords)
                 //console.log(c)
                 polygon = L.polygon(c,{color:'black',fillColor:Randomcolor(),fillOpacity: 0.99}).addTo(map);
+                //console.log(polygon)
+                return polygon
                 //console.log(c[0])
             }
             
-            //console.log(sorted);
-           // var polygon1=0
-            
-          /*  if(polygon1!=0){
-               
-                map.removeLayer(polygon1)
-            }
-    
-            var colortip1=function(cords){
-                
-                //console.log(cords);
-                c=0
-                //polygon1=0
-                c = getcoordinate(cords)
-                //console.log(c)
-                polygon1 = L.polygon(c,{color:'black',fillColor: getColor1(cords.score),fillOpacity: 0.99}).addTo(map);
-                //console.log(polygon)
-            }*/
-            
-            //sorted.forEach(function(d,i){colortip1(d)});
-             //map.removeLayer(geojson);
-             //console.log(sorted)
              var tip = d3.tip()
                       .attr('class', 'd3-tip')
                       .offset([-8, 0])
-                      
-                      
-                      
-                      //.html(function(d) {
-                    //    return "<strong>Score based ranks:</strong> <span style='color:red'>" +d['census']+":</span><strong>"+d['score']+'</strong>';
-                     // })
-              
              
              var vis = d3.select("#barcharta");
              var bars = vis.selectAll("text.bar")
                         .data(sorted)
- 
+            var poly=0;
+            var poly1=0;
+            var test=0;
+            var clicked={};
+            var assetLayerGroup = new L.LayerGroup();
+            //var polytracker={};
             vis.call(tip);
             bars.enter()
                 .append("svg:text")
@@ -171,8 +148,8 @@ var bars = function(data,boro,srange){
                 document.getElementById("nhood").innerHTML=d.neighbor
                 document.getElementById("boro").innerHTML=d.BoroName;
                 document.getElementById("score").innerHTML=Math.ceil(((d.score/maxscore_default)*100));
-                
-                return colortip(d);   
+                poly=colortip(d)
+                return poly;   
             })
                 .on('mouseout', function(){
                 //d3.selectAll("text").remove();
@@ -180,13 +157,35 @@ var bars = function(data,boro,srange){
                 document.getElementById("nhood").innerHTML='Select'
                 document.getElementById("boro").innerHTML='Select'
                 document.getElementById("score").innerHTML='Score'
-                map.removeLayer(polygon);
+               
+                return map.removeLayer(poly);
                 //polygon=0
                 
             })
                 .on('click',function(d){
                 
-                //return (this.tog = !this.tog) ?  colortip(d): map.removeLayer(polygon) ;
+                //console.log(poly1);
+                if(clicked[d.census]==0)
+                {
+                    poly1=colortip(d)
+                    
+                    console.log('hello');
+                    //console.log(getLayer(poly1));
+                    clicked[d.census]=poly1;
+                    
+                    return assetLayerGroup.addLayer(poly1)
+                    //return poly1.addTo(map)
+                }
+                else{
+                    //console.log(map.getActiveOverlayLayers());
+                    var poly2 = clicked[d.census]
+                    console.log(poly2);
+                    clicked[d.census]=0
+                    map.removeLayer(poly2)
+                    //assetLayerGroup.clearLayers();
+                
+                    return assetLayerGroup.clearLayers();
+                }
             })
             bars.exit()
                 .remove()
@@ -206,7 +205,9 @@ var bars = function(data,boro,srange){
                     .text(function(d,i){
                             if(i<5){
                             //console.log(d.census)
+                             clicked[d.census]=0;
                             return i+1+'. '+(d.label).split(',')[0]
+                           
                             }})
                     .attr("font-size", "20px")
                 }

@@ -36,6 +36,7 @@ html, body, #container{
     
 }
 #sidebar {
+    display: block;
     margin-left: 1%;
     margin-right: 1%;
     margin-top: 3.6%;
