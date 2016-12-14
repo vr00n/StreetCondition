@@ -58,7 +58,7 @@
             <input class='rank' id="rankincome"  placeholder="1.0" onchange="checkfields(this);" data-toggle="tooltip" title="Income Weight"> 
             <input class='rank' id="rankcomplaint" placeholder="1.0" onchange="checkfields(this);" data-toggle="tooltip" title="Street Complaint Weight">
             <input class='rank' id="ranksquid" placeholder="1.0" onchange="checkfields(this);" data-toggle="tooltip" title="Squid Score Weight">
-            <!--<span id='update' class="glyphicon glyphicon-menu-right"></span> -->
+            <span id='update' class="glyphicon glyphicon-menu-right"></span> 
         <div style="float:left;width:100%;">
             <p class='textboxlabels'>Car Ownership&nbsp;&nbsp;&nbsp;311 Model&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Median Income&nbsp;&nbsp;&nbsp;&nbsp;SQUID Score</p>
             
@@ -67,7 +67,7 @@
         <!--
         <button id='updatemap' type="button" data-toggle="tooltip" title="Update Map to current seetings" >Update Map
         <span class="glyphicon glyphicon-play-circle"></span>  </button>   --> 
-        <!--<script>
+        <script>
             $('#update').on('click',function()
                             {
                 wtcar = $('#rankcar').val();
@@ -77,7 +77,7 @@
                 map.removeLayer(geojson);
                 readdata();
             });
-        </script> -->
+        </script> 
         <script>
             $(document).ready(function(){
                 $('[data-toggle="tooltip"]').tooltip();
