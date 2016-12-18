@@ -403,6 +403,51 @@
          // console.log(layer.feature.properties.NTACode+ '\n\n'+ layer.feature.properties.NoiseComplains);
           //$('#infoWindow').text(layer.feature.properties.NTACode+'\n\n'+ layer.feature.properties.NoiseComplains);
         }
+        
+        var currclick=[];
+        var currids=[];
+        function mouseclickFunction(e){
+            
+            var layer = e.target;
+            currclick.push(layer);
+            currids.push(this._leaflet_id)
+            //console.log(layer)
+            layer.removeEventListener('mouseout',false);
+            layer.removeEventListener('mouseover',false);
+            console.log(currids);
+            if(currclick.length>1){
+                if(currids[0]==currids[1]){
+                   // console.log(currids);
+                    geojson.resetStyle(currclick[0]);
+                    currclick[0].addEventListener('mouseout',resetHighlight);
+                    currclick[0].addEventListener('mouseover',mouseoverFunction);
+                    currclick=[]
+                    currids=[]
+                }
+                else
+                {
+                 geojson.resetStyle(currclick[0]);
+                currclick[0].addEventListener('mouseout',resetHighlight);
+                currclick[0].addEventListener('mouseover',mouseoverFunction);
+                 currclick.shift();
+                currids.shift();
+                }
+            }
+            if(currids[0]!=currids[1]){
+            layer.setStyle({
+              fillColor:Randomcolor(),
+              weight: 1,
+              color: '#666',
+              dashArray: '',
+              fillOpacity: 0.7
+                
+          });
+               // if(currids.length!=0)
+                weights();
+            }
+       
+            
+        }
 
         //this runs on mouseout
         function resetHighlight(e) {
@@ -454,8 +499,8 @@
         if(layer.feature.properties.BoroName==k || k=='All Boroughs' ){
          layer.on({
              mouseover: mouseoverFunction,
-             mouseout: resetHighlight
-             //click: zoomToFeature
+             mouseout: resetHighlight,
+             click: mouseclickFunction
          });
         };
        }
