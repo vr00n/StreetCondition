@@ -58,7 +58,7 @@
             <input class='rank' id="rankincome"  placeholder="1.0" onchange="checkfields(this);" data-toggle="tooltip" title="Income Weight"> 
             <input class='rank' id="rankcomplaint" placeholder="1.0" onchange="checkfields(this);" data-toggle="tooltip" title="Street Complaint Weight">
             <input class='rank' id="ranksquid" placeholder="1.0" onchange="checkfields(this);" data-toggle="tooltip" title="Squid Score Weight">
-            <span id='update' class="glyphicon glyphicon-menu-right"></span> 
+            <button id='update' value="Update">Go<span  class="glyphicon glyphicon-menu-right"></span></button> 
         <div style="float:left;width:100%;">
             <p class='textboxlabels'>Car Ownership&nbsp;&nbsp;&nbsp;311 Model&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Median Income&nbsp;&nbsp;&nbsp;&nbsp;SQUID Score</p>
             
@@ -74,6 +74,40 @@
                 wtincome = $("#rankincome").val();
                 wtstreet = $("#rankcomplaint").val();
                 wtsquid= $("#ranksquid").val();
+                //weights();
+                  if(wtcar==''){
+                    wtcar=1;
+                }
+                else if(wtcar>5 || wtcar<0){
+                    $('#rankcar').effect("shake");
+                    $('#rankcar').val('');
+                    wtcar=1;
+                }
+                if(wtincome==''){
+                    wtincome=1;
+                }
+                else if(wtincome>5 || wtincome<0){
+                    $('#rankincome').effect("shake");
+                    $('#rankincome').val('');
+                    wtincome=1;
+                }
+                if(wtstreet==''){
+                    wtstreet=1;
+                }
+                else if(wtstreet>5 || wtstreet<0){
+                    $('#rankcomplaint').effect("shake");
+                    $('#rankcomplaint').val('');
+                    wtstreet=1;
+                }
+                if(wtsquid==''){
+                    wtsquid=1;
+                }
+                else if(wtsquid>5 || wtsquid<0){
+                    $('#ranksquid').effect("shake");
+                    $('#ranksquid').val('');
+                    wtsquid=1;
+                }
+                compliants(wtcar,wtincome,wtstreet,wtsquid,maxyear,minyear,bname,[minscore,maxscore])
                 map.removeLayer(geojson);
                 readdata();
             });
@@ -110,6 +144,10 @@
         </p>
         <div id="slider-score" style="width:90%"></div><br>
         </div>
+        <div id='insp_button_div'>
+            <button id='inspector_update'>Update Map</button>
+        </div>
+        
            <script>
             var minyear = 2005;
             var maxyear = 2016;
@@ -137,10 +175,7 @@
                     minscore=+($('#amount1').val().split('-')[0].trim());
                     maxscore=+($('#amount1').val().split('-')[1].trim());
                     //console.log(wtcar,wtincome,wtstreet);
-                    compliants(wtcar,wtincome,wtstreet,wtsquid,maxyear,minyear,bname,[minscore,maxscore]);
-                    
-                    map.removeLayer(geojson);
-                    readdata();
+                     
                     
                   }
                 });
@@ -151,7 +186,12 @@
              //console.log(maxscore)
              year(2005,2016,2005,2016,'range','amount');
              year(0,100,0,100,'score','amount1');
-             
+              $('#inspector_update').on('click',function(){
+                          compliants(wtcar,wtincome,wtstreet,wtsquid,maxyear,minyear,bname,[minscore,maxscore]);
+                           map.removeLayer(geojson);
+                           readdata();    
+                      })
+              
                function checkfields(sel){
             
                 if($('#'+sel.id).val()>5 || $('#'+sel.id).val()<0){
@@ -172,7 +212,7 @@
    
     //console.log($( "#slider-range" ).slider( "values", 0 ),$( "#slider-range" ).slider( "values", 1 ));
    
-    var queue =[];
+    var queue =[-19];
     var minqueue =[2];
     var maxqueue =[2];
     var map = L.map('map', {
@@ -247,7 +287,7 @@
                   opacity: 1,
                   color: 'white',
                   dashArray: '1',
-                  fillOpacity: 0.1
+                  fillOpacity: 0.05
               };
           }
          
@@ -341,25 +381,11 @@
                 sumwts=wtcar+wtincome+wtstreet+wtsquid;
                 //console.log(sumwts);
                 //if weights are changed then queue will update maps and top census tracts
-                queue.push(sumwts);
+               // queue.push(sumwts);
                 //if yearrange is changed then minqueue and maxqueus would track changes and update top census tracts.  
             
                 //console.log(queue, queue.length)
-                if(queue.length>2){
-                    queue.shift();
-                    
-                }
-             
-//               needs update when weights are updated
-                if(queue.length>1 && queue[0]!=queue[1])
-                 {
-                    //d3.selectAll("text").remove();
-                    compliants(wtcar,wtincome,wtstreet,wtsquid,maxyear,minyear,bname,[minscore,maxscore]);
-                    map.removeLayer(geojson);
-                    readdata();
-                    //layer.bringToFront();
-                    
-                }
+              
                 //console.log(maxscore_default)
                 document.getElementById("score").innerHTML=Math.ceil(((score/maxscore_default)*100)/4)
               

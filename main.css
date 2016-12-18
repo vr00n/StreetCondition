@@ -22,7 +22,7 @@ html, body, #container{
 
 #inspector{
     width: 220px;
-    height:150px;
+    height:170px;
     overflow: auto;
     box-shadow: 0 0 10px rgba(0,0,0,0.55);
     margin-top: 150px;
@@ -200,9 +200,19 @@ html, body, #container{
     font-size:9px;
     margin-left: 1%
 }
+    #insp_button_div{
+        text-align: center;
+    }
+
+
 #menumobile{
     display: none;
 }
+
+
+
+
+
 @media screen and (max-width: 500px) {
     #sidebar{
     display: none;
@@ -265,7 +275,3 @@ html, body, #container{
     font-size:9px;
     margin-left: 1%
 }
-    
-
-}
-
