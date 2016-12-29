@@ -57,7 +57,7 @@ var compliants = function(wcar,wincome,wstreet,wsquid,max,min,boro='All Boroughs
                         squid = d['squid']
                         nbrhood = d['NTAName']
                         score = Math.ceil(((wstreet*street)+(wincome*(2159-income))+(wcar*car)+(wsquid*squid))/4);
-                     //console.log(score);
+                       //console.log(wincome*(2159-income));
                         return {"label":geoLabel,"score":score,"census":census,"geometry":geometry,"BoroName":boroName,"neighbor":nbrhood};
                     }
                     return readd3(d);

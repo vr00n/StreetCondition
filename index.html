@@ -60,7 +60,8 @@
             <input class='rank' id="ranksquid" placeholder="1.0" onchange="checkfields(this);" data-toggle="tooltip" title="Squid Score Weight">
             <button id='update' value="Update">Go<span  class="glyphicon glyphicon-menu-right"></span></button> 
         <div style="float:left;width:100%;">
-            <p class='textboxlabels'>Car Ownership&nbsp;&nbsp;&nbsp;311 Model&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Median Income&nbsp;&nbsp;&nbsp;&nbsp;SQUID Score</p>
+            <p class='textboxlabels'>Car Ownership&nbsp;&nbsp;&nbsp;Median Income &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;311 Model
+                &nbsp;&nbsp;&nbsp;&nbsp;SQUID Score</p>
             
         </div>
         </div>
@@ -147,7 +148,7 @@
         <div id='insp_button_div'>
             <button id='inspector_update'>Update Map</button>
         </div>
-        
+            
            <script>
             var minyear = 2005;
             var maxyear = 2016;
@@ -200,6 +201,7 @@
                    // compliants(1,1,1,maxyear,minyear,bname,[minscore,maxscore]);
                 }
             }
+               
         </script>
           </div>
       </div>
@@ -239,6 +241,7 @@
     L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',{
       attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>,Developed by:<a href="http://nikhilsprofile.com">Nikhil Kishore</a>'
     }).addTo(map);
+    map.doubleClickZoom.disable(); 
 
     var layerUrl = 'https://rgdonohue.cartodb.com/api/v2/viz/bcdbfe36-6f4f-11e5-833d-0e674067d321/viz.json';
 
@@ -266,9 +269,9 @@
                 else{
                     streetcol=parseInt(feature.properties['rstreet']);
                 }
-          scorec=(wtcar*feature.properties['rveh'])+(wtincome*(2159-feature.properties['rincome']))+(wtstreet*streetcol)+(wtsquid*feature.properties['squid']);
+          scorec=(wtcar*feature.properties['rveh'])+(wtincome*(2159-(feature.properties['rincome'])))+(wtstreet*streetcol)+(wtsquid*feature.properties['squid']);
           scorec=Math.ceil(((scorec/maxscore_default)*100)/4)
-          //console.log(streetcol);
+          console.log('Income: ',wtincome," 311:",wtstreet);
           if(feature.properties.BoroName==k || k=='All Boroughs' && scorec<=maxscore && scorec>=minscore){
               
               return {
@@ -347,32 +350,32 @@
                     wtcar=1;
                 }
                 else if(wtcar>5 || wtcar<0){
-                    $('#rankcar').effect("shake");
-                    $('#rankcar').val('');
+                   // $('#rankcar').effect("shake");
+                //    $('#rankcar').val('');
                     wtcar=1;
                 }
                 if(wtincome==''){
                     wtincome=1;
                 }
                 else if(wtincome>5 || wtincome<0){
-                    $('#rankincome').effect("shake");
-                    $('#rankincome').val('');
+                    //$('#rankincome').effect("shake");
+                    //$('#rankincome').val('');
                     wtincome=1;
                 }
                 if(wtstreet==''){
                     wtstreet=1;
                 }
                 else if(wtstreet>5 || wtstreet<0){
-                    $('#rankcomplaint').effect("shake");
-                    $('#rankcomplaint').val('');
+                    //$('#rankcomplaint').effect("shake");
+                    //$('#rankcomplaint').val('');
                     wtstreet=1;
                 }
                 if(wtsquid==''){
                     wtsquid=1;
                 }
                 else if(wtsquid>5 || wtsquid<0){
-                    $('#ranksquid').effect("shake");
-                    $('#ranksquid').val('');
+                   // $('#ranksquid').effect("shake");
+                    //$('#ranksquid').val('');
                     wtsquid=1;
                 }
                 score= (wtcar*car)+(wtincome*(2159-income))+(wtstreet*street)+(wtsquid*squid);
@@ -414,6 +417,7 @@
             //console.log(layer)
             layer.removeEventListener('mouseout',false);
             layer.removeEventListener('mouseover',false);
+            //document.getElementById("score").removeEventListener("mousemove");
             console.log(currids);
             if(currclick.length>1){
                 if(currids[0]==currids[1]){
