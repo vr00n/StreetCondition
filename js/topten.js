@@ -200,14 +200,14 @@ var bars = function(data,boro,srange){
                     .ease("linear")
                  //   .attr("height",10)
                     .attr("y", function(d,i){
-                            if(i<6){
+                            if(i<10){
                                 return (20+(30*i));
                             }})
                     .text(function(d,i){
-                            if(i<5){
+                            if(i<10){
                             //console.log(d.census)
                              clicked[d.census]=0;
-                            return i+1+'. '+(d.label).split(',')[0]
+                            return i+1+'. '+(d.label).split(',')[0]+','+(d.BoroName)
                            
                             }})
                     .attr("font-size", "20px")
@@ -220,7 +220,7 @@ var bars = function(data,boro,srange){
         var svg = d3.select("#svg4")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
-            .attr("viewBox", "0 0 200 200")
+            .attr("viewBox", "0 0 300 300")
             .classed("svg-container", true)
             .classed("svg-content-responsive", true); 
         

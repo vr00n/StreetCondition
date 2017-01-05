@@ -160,6 +160,7 @@
             var wtincome = 1;
             var wtstreet = 1;
             var wtsquid = 1;
+            var disablecolor=0;
             var year = function(min,max,defm,defmax,v,a) {
             
                 $( "#slider-"+v ).slider({
@@ -271,7 +272,7 @@
                 }
           scorec=(wtcar*feature.properties['rveh'])+(wtincome*(2159-(feature.properties['rincome'])))+(wtstreet*streetcol)+(wtsquid*feature.properties['squid']);
           scorec=Math.ceil(((scorec/maxscore_default)*100)/4)
-          console.log('Income: ',wtincome," 311:",wtstreet);
+          //console.log('Income: ',wtincome," 311:",wtstreet);
           if(feature.properties.BoroName==k || k=='All Boroughs' && scorec<=maxscore && scorec>=minscore){
               
               return {
@@ -300,7 +301,10 @@
         //this function is set to run when a user mouses over any polygon
         var bname='All Boroughs';
         var score = 'All';
+        
         function mouseoverFunction(e) {
+        if(disablecolor==0)
+            {
           var layer = e.target;
             //console.log(layer)
           layer.setStyle({
@@ -395,13 +399,13 @@
                 
                 //console.log(rankcar);
             }
-            weights();
             
+            weights();
 
           if (!L.Browser.ie && !L.Browser.opera) {
               layer.bringToFront();
           }
-
+        }
           //update the text in the infowindow with whatever was in the data
          // console.log(layer.feature.properties.NTACode+ '\n\n'+ layer.feature.properties.NoiseComplains);
           //$('#infoWindow').text(layer.feature.properties.NTACode+'\n\n'+ layer.feature.properties.NoiseComplains);
@@ -409,6 +413,7 @@
         
         var currclick=[];
         var currids=[];
+        
         function mouseclickFunction(e){
             
             var layer = e.target;
@@ -417,9 +422,12 @@
             //console.log(layer)
             layer.removeEventListener('mouseout',false);
             layer.removeEventListener('mouseover',false);
-            //document.getElementById("score").removeEventListener("mousemove");
+            disablecolor=1;
+            //$('#map').css('pointer-events','inherit');
+            //document.getElementById("map").removeEventListener("click","mouseoverFunction");
             console.log(currids);
             if(currclick.length>1){
+                //disablecolor=0
                 if(currids[0]==currids[1]){
                    // console.log(currids);
                     geojson.resetStyle(currclick[0]);
@@ -427,6 +435,7 @@
                     currclick[0].addEventListener('mouseover',mouseoverFunction);
                     currclick=[]
                     currids=[]
+                    disablecolor=0
                 }
                 else
                 {
@@ -435,9 +444,86 @@
                 currclick[0].addEventListener('mouseover',mouseoverFunction);
                  currclick.shift();
                 currids.shift();
+                
+                 document.getElementById("ct").innerHTML=layer.feature.properties['BoroCT2010'].toString().slice(6,9);
+                document.getElementById("nhood").innerHTML=layer.feature.properties['NTAName'];
+                document.getElementById("boro").innerHTML=layer.feature.properties['BoroName'];
+                var car = parseInt(layer.feature.properties['rveh']);
+                var income=parseInt(layer.feature.properties['rincome']);
+                var squid=parseInt(layer.feature.properties['squid']);
+                var street=0
+                // if min and max year is custom selected then mean of selected year's rank is returned as effective net complaint rank
+                if((maxyear-minyear)!=11)
+                    {
+                        for(i=minyear;i<=maxyear;i++){
+                        street+=parseInt(layer.feature.properties['rstreet'+i]);
+                    }
+                   // console.log(maxyear-minyear)
+                    street=street/(maxyear-minyear);
+                    }
+                else{
+                    street=parseInt(layer.feature.properties['rstreet']);
+                }
+                //console.log(street,'street');
+                wtcar = $('#rankcar').val();
+                wtincome = $("#rankincome").val();
+                wtstreet = $("#rankcomplaint").val();
+                wtsquid= $("#ranksquid").val();
+                if(wtcar==''){
+                    wtcar=1;
+                }
+                else if(wtcar>5 || wtcar<0){
+                   // $('#rankcar').effect("shake");
+                //    $('#rankcar').val('');
+                    wtcar=1;
+                }
+                if(wtincome==''){
+                    wtincome=1;
+                }
+                else if(wtincome>5 || wtincome<0){
+                    //$('#rankincome').effect("shake");
+                    //$('#rankincome').val('');
+                    wtincome=1;
+                }
+                if(wtstreet==''){
+                    wtstreet=1;
+                }
+                else if(wtstreet>5 || wtstreet<0){
+                    //$('#rankcomplaint').effect("shake");
+                    //$('#rankcomplaint').val('');
+                    wtstreet=1;
+                }
+                if(wtsquid==''){
+                    wtsquid=1;
+                }
+                else if(wtsquid>5 || wtsquid<0){
+                   // $('#ranksquid').effect("shake");
+                    //$('#ranksquid').val('');
+                    wtsquid=1;
+                }
+                score= (wtcar*car)+(wtincome*(2159-income))+(wtstreet*street)+(wtsquid*squid);
+                console.log(score);
+            
+                sumwts=wtcar+wtincome+wtstreet+wtsquid;
+                //console.log(sumwts);
+                //if weights are changed then queue will update maps and top census tracts
+               // queue.push(sumwts);
+                //if yearrange is changed then minqueue and maxqueus would track changes and update top census tracts.  
+            
+                //console.log(queue, queue.length)
+              
+                //console.log(maxscore_default)
+                document.getElementById("score").innerHTML=Math.ceil(((score/maxscore_default)*100)/4)
+              
+                
+                //console.log(rankcar);
+            
+                
                 }
             }
+            
             if(currids[0]!=currids[1]){
+            
             layer.setStyle({
               fillColor:Randomcolor(),
               weight: 1,
@@ -447,7 +533,7 @@
                 
           });
                // if(currids.length!=0)
-                weights();
+                //weights();
             }
        
             
@@ -455,13 +541,14 @@
 
         //this runs on mouseout
         function resetHighlight(e) {
-          geojson.resetStyle(e.target);
+          if(disablecolor==0)
+            {geojson.resetStyle(e.target);
             //var layer = e.target;
             //document.getElementById("requests").innerHTML=0
             document.getElementById("ct").innerHTML="Select"
             document.getElementById("nhood").innerHTML="Select"
             document.getElementById("boro").innerHTML="Select"
-            document.getElementById("score").innerHTML="Select"
+            document.getElementById("score").innerHTML="Select"}
         }
         
         var info = L.control();
