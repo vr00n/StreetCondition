@@ -50,7 +50,7 @@
         <div id="score">
             <p>Score</p>
         </div>
-        <div id="sub" data-toggle="tooltip" title="c=(car_wt*per_capita_car), i=(income_wt*median income), ct=(comptaint_wt*311_complain), s= (SQUID_wt*SQUID_score) score=sum(c,i,ct,s)*100/ sum(max(c))+ sum(max(i))+ sum(max(ct)+ sum(max(s))"><span class="glyphicon glyphicon-question-sign"></span></div>
+        <div id="sub" data-toggle="tooltip" title="x=(car_wt*per_capita_car)+(income_wt*median income)+(comptaint_wt*311_complain)+(SQUID_wt*SQUID_score), x_max= max(car_wt*per_capita_car)+ max(income_wt*median income)+ max(comptaint_wt*311_complain)+ max(SQUID_wt*SQUID_score) score= x*100/x_max"><span class="glyphicon glyphicon-question-sign"></span></div>
         <h6 style="float:left"><i>Adjust Weight from 1-5 and hover over map to visualize.</i></h6>
         <div id="ranksection">
             <!--<span class="tooltiptext">Tooltip text</span>-->
@@ -271,7 +271,7 @@
                     streetcol=parseInt(feature.properties['rstreet']);
                 }
           scorec=(wtcar*feature.properties['rveh'])+(wtincome*(2159-(feature.properties['rincome'])))+(wtstreet*streetcol)+(wtsquid*feature.properties['squid']);
-          scorec=Math.ceil(((scorec/maxscore_default)*100)/4)
+          scorec=Math.ceil(((scorec/maxscore_default)*100))
           //console.log('Income: ',wtincome," 311:",wtstreet);
           if(feature.properties.BoroName==k || k=='All Boroughs' && scorec<=maxscore && scorec>=minscore){
               
@@ -394,7 +394,7 @@
                 //console.log(queue, queue.length)
               
                 //console.log(maxscore_default)
-                document.getElementById("score").innerHTML=Math.ceil(((score/maxscore_default)*100)/4)
+                document.getElementById("score").innerHTML=Math.ceil(((score/maxscore_default)*100))
               
                 
                 //console.log(rankcar);
