@@ -50,17 +50,17 @@
         <div id="score">
             <p>Score</p>
         </div>
-        <div id="sub" data-toggle="tooltip" title="(car_wt*per_capita_car)+(income_wt*median income)+(comptaint_wt*311_complain)+(SQUID_wt*SQUID_score)"><span class="glyphicon glyphicon-question-sign"></span></div>
+        <div id="sub" data-toggle="tooltip" title="c=(car_wt*per_capita_car), i=(income_wt*median income), ct=(comptaint_wt*311_complain), s= (SQUID_wt*SQUID_score) score=sum(c,i,ct,s)*100/ sum(max(c))+ sum(max(i))+ sum(max(ct)+ sum(max(s))"><span class="glyphicon glyphicon-question-sign"></span></div>
         <h6 style="float:left"><i>Adjust Weight from 1-5 and hover over map to visualize.</i></h6>
         <div id="ranksection">
             <!--<span class="tooltiptext">Tooltip text</span>-->
-            <input class='rank' id="rankcar" placeholder="1.0" onblur="checkfields(this);" data-toggle="tooltip" title="Car Weight" > 
-            <input class='rank' id="rankincome"  placeholder="1.0" onchange="checkfields(this);" data-toggle="tooltip" title="Income Weight"> 
-            <input class='rank' id="rankcomplaint" placeholder="1.0" onchange="checkfields(this);" data-toggle="tooltip" title="Street Complaint Weight">
-            <input class='rank' id="ranksquid" placeholder="1.0" onchange="checkfields(this);" data-toggle="tooltip" title="Squid Score Weight">
+            <input class='rank' id="rankcar" placeholder="1.0" onblur="checkfields(this);" data-toggle="tooltip" title="Source: ACS 2014, Description: Rank of ACS data from 1 to length of census tracts" > 
+            <input class='rank' id="rankincome"  placeholder="1.0" onchange="checkfields(this);" data-toggle="tooltip" title="Source: ACS 2014, Description: Inverse of rank from 1 to length of census tracts i.e.(max_Rank -Rank )"> 
+            <input class='rank' id="rankcomplaint" placeholder="1.0" onchange="checkfields(this);" data-toggle="tooltip" title="Source: NYC 311, Description: Rank of 311 data from 1 to length of census tracts">
+            <input class='rank' id="ranksquid" placeholder="1.0" onchange="checkfields(this);" data-toggle="tooltip" title="This is a randomly generated metric of street quality based on a scale of 0-100">
             <button id='update' value="Update">Go<span  class="glyphicon glyphicon-menu-right"></span></button> 
         <div style="float:left;width:100%;">
-            <p class='textboxlabels'>Car Ownership&nbsp;&nbsp;&nbsp;Median Income &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;311 Model
+            <p class='textboxlabels' >Car Ownership&nbsp;&nbsp;&nbsp;Median Income &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;311 Model
                 &nbsp;&nbsp;&nbsp;&nbsp;SQUID Score</p>
             
         </div>
