@@ -1,4 +1,4 @@
-# SQUID Score - https://nk1877.github.io/StreetCondition/#
+# [SQUID Score](https://nk1877.github.io/StreetCondition/#)
 *A decision making tool for NYC street maintenance
 Combines 311 "Street complaint data" + ACS Car Ownership Data + ACS Median Income Data + a Hypothesized score from <a href="https://youtu.be/QzMCTIdxpoc" target="_blank">Street Quality Identification Device aka SQUID</a> to generate a* **response metric** *for NYC Street maintenance personnel to allocate resources in a manner that is more reflective of local conditions and leverages low-cost data collection methods*
 
